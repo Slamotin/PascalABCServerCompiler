@@ -1,0 +1,22 @@
+{
+  "name": "pascalabcservercompiler",
+  "version": "1.0.0",
+  "description": "Compile PascalABC.NET code in web.",
+  "main": "app2.js",
+  "scripts": {
+    "test": "test.js"
+  },
+  "keywords": [
+    "compiler",
+    "webcompiler",
+    "pascal",
+    "pascalabc",
+    "pascalabc.net"
+  ],
+  "author": "Mezijin",
+  "license": "ISC",
+  "dependencies": {
+    "pg": "^8.7.3",
+    "ws": "^8.6.0"
+  }
+}

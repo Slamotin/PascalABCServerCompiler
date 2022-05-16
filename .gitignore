@@ -1,0 +1,13 @@
+*.log
+*.exe
+*.mdb
+*.txt
+*.pas
+*.sln
+*.njsproj
+*.user
+.git/
+.vs/
+bin/
+node_modules/
+obj/
