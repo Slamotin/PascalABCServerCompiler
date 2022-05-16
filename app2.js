@@ -1,5 +1,5 @@
 
-const port = 9000;
+const port = process.env.PORT || 80;
 var pabcexePath = "/opt/pabcnetc/pabcnetc.exe";
 
 //const { json } = require('express');
