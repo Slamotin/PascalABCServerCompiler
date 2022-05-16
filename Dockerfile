@@ -1,10 +1,10 @@
 FROM node:alpine
 
-RUN apk -i update && apk -i add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
-    apk -i add --no-cache --virtual=.build-dependencies ca-certificates && \
+RUN apk update && apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
+    apk add --no-cache --virtual=.build-dependencies ca-certificates && \
     cert-sync /etc/ssl/certs/ca-certificates.crt && \
-    apk -i del .build-dependencies &&\
-    apk -i add --no-cache wget unzip &&\
+    apk del .build-dependencies &&\
+    apk add --no-cache wget unzip &&\
     wget http://pascalabc.net/downloads/PABCNETC.zip -O /tmp/PABCNETC.zip &&\
     mkdir -p /opt/pabcnetc &&\
     mkdir -p /opt/compiler &&\
