@@ -4,11 +4,11 @@ var pabcexePath = "/opt/pabcnetc/pabcnetc.exe";
 
 //const { json } = require('express');
 //const app = require('express');
+//const { connect } = require('http2');
 const db = require('./database.js');
 //const http = require('http').createServer(app);
 //const wsServer = require('socket.io')(http);
 const WebSocket = require('ws');
-//const { connect } = require('http2');
 const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*" });
 
 
