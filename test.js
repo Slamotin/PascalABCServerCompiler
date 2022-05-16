@@ -34,7 +34,7 @@ function handler(connection, i) {
 
 async function myFunc(i) {
         client1[i] = new WebSocketClient();
-        client1[i].connect('ws://localhost:9000/');
+        client1[i].connect('ws://nodejs-webcompiler-server.herokuapp.com/:80');
         //handler.bind(this, this.i);
         client1[i].on('connect', function (connection) {
             connection.send(JSON.stringify({ action: 'CODE', data: code, id: i, fromStartTime: Date.now() - startTime }));
@@ -61,7 +61,7 @@ let client1 = [];
 
 
 let start = async function () {
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 100; i++) {
         await myFunc(i);
     }
 }
