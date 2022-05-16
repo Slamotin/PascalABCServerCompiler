@@ -7,7 +7,7 @@ RUN apk -i update && apk -i add --no-cache mono --repository http://dl-cdn.alpin
     apk -i add --no-cache wget unzip &&\
     wget http://pascalabc.net/downloads/PABCNETC.zip -O /tmp/PABCNETC.zip &&\
     mkdir /opt/pabcnetc &&\
-    unzip /tmp/PABCNETC.zip -d /opt/pabcnetc &&\
+    unzip /tmp/PABCNETC.zip -d /opt/pabcnetc
     
 COPY app2.js
 COPY database.js
