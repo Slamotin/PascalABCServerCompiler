@@ -4,7 +4,7 @@ RUN apk update && apk add --no-cache mono --repository http://dl-cdn.alpinelinux
     apk add --no-cache --virtual=.build-dependencies ca-certificates && \
     cert-sync /etc/ssl/certs/ca-certificates.crt && \
     apk del .build-dependencies &&\
-    apk add --update --no-cache wget unzip openssh &&\
+    apk add --update --no-cache wget unzip openssh bash &&\
     wget http://pascalabc.net/downloads/PABCNETC.zip -O /tmp/PABCNETC.zip &&\
     mkdir -p /opt/pabcnetc &&\
     mkdir -p /opt/compiler &&\
