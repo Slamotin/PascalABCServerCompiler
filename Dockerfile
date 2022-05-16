@@ -7,7 +7,8 @@ RUN apk update && apk add --no-cache mono --repository http://dl-cdn.alpinelinux
     apk add --update --no-cache wget unzip openssh bash &&\
     wget http://pascalabc.net/downloads/PABCNETC.zip -O /tmp/PABCNETC.zip &&\
     mkdir -p /opt/pabcnetc &&\
-    mkdir -p /opt/compiler &&\
+    mkdir -p /opt/server &&\
+    mkdir -p /opt/server/user_data &&\
     unzip /tmp/PABCNETC.zip -d /opt/pabcnetc
 
 RUN echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config
