@@ -16,10 +16,10 @@ RUN adduser -h /home/qwerty -s /bin/sh -D qwerty
 RUN echo -n 'qwerty:qwerty12345' | chpasswd
 EXPOSE 22
     
-COPY app2.js /opt/compiler
-COPY database.js /opt/compiler
-COPY test.js /opt/compiler
-COPY package.json /opt/compiler
-COPY package-lock.json /opt/compiler
-WORKDIR /opt/compiler
+COPY app2.js /opt/server
+COPY database.js /opt/server
+COPY test.js /opt/server
+COPY package.json /opt/server
+COPY package-lock.json /opt/server
+WORKDIR /opt/server
 CMD npm install pg && npm install ws && node app2.js
