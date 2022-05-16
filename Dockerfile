@@ -16,4 +16,4 @@ COPY test.js /opt/compiler
 COPY package.json /opt/compiler
 COPY package-lock.json /opt/compiler
 WORKDIR /opt/compiler
-CMD npm -i && node app2.js
+CMD npm install pg && npm install ws && node app2.js
