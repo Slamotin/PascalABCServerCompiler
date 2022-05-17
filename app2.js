@@ -147,6 +147,13 @@ function checkLogin(nickname) {
 
         console.log('login from db: '+res.rows[0].nickname)
     });
+    db.getClient().query('select nickname as nickname from users where nickname = $1', [nickname], (err, res) => {
+        if (err) {
+            return console.error('error running query1', err);
+        }
+
+        console.log('login from db1: ' + res.rows[0].nickname)
+    });
 }
 
 function signupUser(login, hash, privileges) {
