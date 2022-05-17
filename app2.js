@@ -47,11 +47,12 @@ async function onConnect(wsClient) {
                     let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
                     console.log('hash: ' + new_hash);
                     if (existLogin(jsonMessage.login)) {
-                        
+                        console.log('exist login true')
                         wsClient.send(JSON.stringify({ action: "SIGNUP_LOGIN_USED"}))
                     }
                     else {
                         //add new user to db
+                        console.log('exist login false')
                         console.log('new user: ' + jsonMessage.login);
                         //signupUser(jsonMessage.login, new_hash, 'student');
                     }
