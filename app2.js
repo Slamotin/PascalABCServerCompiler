@@ -158,6 +158,8 @@ async function existLogin(nick) {
         console.log('onREjectedError ' + onRejected)
         return true
     })
+
+    console.log('aaaaaaaaaaaaaaa: ' + res)
     /*res.catch(error => {
         alert(error); // Error: Not Found
     })*/
