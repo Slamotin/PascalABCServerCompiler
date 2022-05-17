@@ -149,6 +149,12 @@ function get_hash(login, password) {
 async function existLogin(nick) {
 
     let res = db.query(`SELECT nickname AS nickname FROM users WHERE nickname = ${nick}`);
+    res.then(onFulfilled => {
+        console.log('res: ' + res.row[0].nickname);
+    })
+    res.then(null, onRejected => {
+        console.log('onREjectedError ' + onRejected)
+    })
     /*res.catch(error => {
         alert(error); // Error: Not Found
     })*/
@@ -160,7 +166,7 @@ async function existLogin(nick) {
 
         console.log('login from db: '+res.rows[0].nickname)
     });*/
-    console.log('res: ' + res.row[0].nickname);
+    
 
     /*const { Pool } = require('pg');
 
