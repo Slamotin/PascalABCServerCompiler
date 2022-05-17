@@ -1,5 +1,7 @@
 // Создаётся экземпляр клиента
 var WebSocketClient = require('websocket').client;
+const timers = require('timers-promises');
+
 let code = `//Simple example
 var a, b, c: integer;
 begin
@@ -37,7 +39,7 @@ async function myFunc(i) {
         client1[i].connect('ws://nodejs-webcompiler-server.herokuapp.com/:80');
         //handler.bind(this, this.i);
         client1[i].on('connect', function (connection) {
-            connection.send(JSON.stringify({ action: 'CODE', data: code, id: i, fromStartTime: Date.now() - startTime }));
+            connection.send(JSON.stringify({ action: 'PING', data: code, id: i, fromStartTime: Date.now() - startTime }));
             console.log('i = ', i);
 
             connection.on('error', function (error) {
@@ -61,8 +63,9 @@ let client1 = [];
 
 
 let start = async function () {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 10000; i++) {
         await myFunc(i);
+	await timers.setTimeout(100);
     }
 }
 

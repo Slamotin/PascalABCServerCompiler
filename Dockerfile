@@ -22,4 +22,4 @@ COPY test.js /opt/server
 COPY package.json /opt/server
 COPY package-lock.json /opt/server
 WORKDIR /opt/server
-CMD npm install pg && npm install ws && node app2.js
+CMD npm install pg && npm install ws && node app2.js > log.txt
