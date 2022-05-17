@@ -140,19 +140,29 @@ function get_hash(login, password) {
 }
 
 function checkLogin(nickname) {
+    /*
     db.query('select nickname as nickname from users where nickname = $1', [nickname], (err, res) => {
         if (err) {
             return console.error('error running query', err);
         }
 
         console.log('login from db: '+res.rows[0].nickname)
+    });*/
+    const { Pool } = require('pg');
+
+    const pool = new Pool({
+        connectionString: 'postgres://troxojbzrlqhko:3c8664d451486b3378c39b12577d5fe6c7229d382982035920568850ad401d9e@ec2-52-212-228-71.eu-west-1.compute.amazonaws.com:5432/df1crp8nniui6p',
+        ssl: {
+            rejectUnauthorized: false
+        }
     });
-    db.getClient().query('select nickname as nickname from users where nickname = $1', [nickname], (err, res) => {
+
+    await pool.query('select nickname as nickname from users where nickname = $1', [nickname], (err, res) => {
         if (err) {
-            return console.error('error running query1', err);
+            return console.error('error running query', err);
         }
 
-        console.log('login from db1: ' + res.rows[0].nickname)
+        console.log('login from db: ' + res.rows[0].nickname)
     });
 }
 
