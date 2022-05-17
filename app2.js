@@ -2,7 +2,7 @@
 const port = process.env.PORT || 8080;
 var pabcexePath = "/opt/pabcnetc/pabcnetc.exe";
 
-const db = require('./database.js');
+//const db = require('./database.js');
 const WebSocket = require('ws');
 const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*" });
 
@@ -148,7 +148,7 @@ function get_hash(login, password) {
 
 async function existLogin(nick) {
 
-    let { res } = await db.query('SELECT nickname FROM users WHERE nickname = $1',[nick.toString()]);
+    let res = await db.query('SELECT nickname FROM users WHERE nickname = $1',[nick.toString()]);
     res.then(onFulfilled => {
         console.log('res: ' + res.row[0].nickname);
         console.log('res1: ' + res[0]);
