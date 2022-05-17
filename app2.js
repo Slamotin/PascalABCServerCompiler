@@ -48,7 +48,7 @@ async function onConnect(wsClient) {
                     console.log('hash: ' + new_hash);
                     checkLogin(jsonMessage.login);
                     //add new user to db
-                    signupUser(jsonMessage.login, new_hash, 'student');
+                    //signupUser(jsonMessage.login, new_hash, 'student');
                     //console.log('getClient() = ')
                     //addUser(jsonMessage.login, new_hash);
                     //break;
