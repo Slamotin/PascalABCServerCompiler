@@ -46,7 +46,7 @@ async function onConnect(wsClient) {
                 case 'SIGNUP':
                     let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
                     console.log('hash: ' + new_hash);
-                    if (existLogin(jsonMessage.login)) {
+                    if (await existLogin(jsonMessage.login)) {
                         
                         wsClient.send(JSON.stringify({ action: "SIGNUP_LOGIN_USED"}))
                     }
