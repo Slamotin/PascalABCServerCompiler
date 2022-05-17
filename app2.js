@@ -139,13 +139,13 @@ function get_hash(login, password) {
     return hash.digest({ buffer: Buffer.alloc(32), format: 'hex' });
 }
 
-function checkLogin(login) {
-    db.query('select login as login from users where $1', [login], (err, res) => {
+function checkLogin(nickname) {
+    db.query('select nickname as nickname from users where nickname = $1', [nickname], (err, res) => {
         if (err) {
             return console.error('error running query', err);
         }
 
-        console.log('login from db: '+res.rows[0].login)
+        console.log('login from db: '+res.rows[0].nickname)
     });
 }
 
