@@ -160,6 +160,7 @@ async function existLogin(nick) {
     })*/
 
     console.log('aaaaaaaaaaaaaaa: ' + res.rows[0].nickname)
+    return res.rows[0].nickname === nick ? true:false
     /*res.catch(error => {
         alert(error); // Error: Not Found
     })*/
@@ -171,27 +172,8 @@ async function existLogin(nick) {
 
         console.log('login from db: '+res.rows[0].nickname)
     });*/
+
     
-
-    /*const { Pool } = require('pg');
-
-    const pool = new Pool({
-        connectionString: 'postgres://troxojbzrlqhko:3c8664d451486b3378c39b12577d5fe6c7229d382982035920568850ad401d9e@ec2-52-212-228-71.eu-west-1.compute.amazonaws.com:5432/df1crp8nniui6p',
-        ssl: {
-            rejectUnauthorized: false
-        }
-    });*/
-
-    /*await pool.query('select nickname as nickname from users where nickname = $1', [nickname], (err, res) => {
-        if (err) {
-            return console.error('error running query', err);
-        }
-        try {
-            console.log('login from db: ' + res.rows[0].nickname)
-        } catch (e) {
-            return false;
-        }
-    });*/
 }
 
 function signupUser(login, hash, privileges) {
