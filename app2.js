@@ -48,7 +48,7 @@ async function onConnect(wsClient) {
                     console.log('hash: ' + new_hash);
                     if (existLogin(jsonMessage.login)) {
                         
-                        wsServer.send(JSON.stringify({ action: "SIGNUP_LOGIN_USED"}))
+                        wsClient.send(JSON.stringify({ action: "SIGNUP_LOGIN_USED"}))
                     }
                     else {
                         //add new user to db
@@ -147,8 +147,8 @@ function get_hash(login, password) {
 }
 
 async function existLogin(nickname) {
-    
-    let res = await db.query('select nickname as nickname from users where nickname = $1', [nickname]);/* (err, res) => {
+
+    let res = await db.query(`select nickname as nickname from users where nickname = ${nickname}`);/* (err, res) => {
         if (err) {
             return console.error('error running query', err);
         }
