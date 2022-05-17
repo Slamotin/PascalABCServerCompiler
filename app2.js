@@ -139,7 +139,7 @@ function get_hash(login, password) {
     return hash.digest({ buffer: Buffer.alloc(32), format: 'hex' });
 }
 
-function checkLogin(nickname) {
+async function checkLogin(nickname) {
     /*
     db.query('select nickname as nickname from users where nickname = $1', [nickname], (err, res) => {
         if (err) {
