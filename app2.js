@@ -164,6 +164,7 @@ async function existLogin(nick) {
     try {
         return res.rows[0].nickname === nick ? true : false
     } catch (e) {
+        console.log('catch exists error: ' + e)
         return false
     }
     /*res.catch(error => {
