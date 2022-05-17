@@ -2,7 +2,7 @@
 const port = process.env.PORT || 8080;
 var pabcexePath = "/opt/pabcnetc/pabcnetc.exe";
 
-//const db = require('./database.js');
+const db = require('./database.js');
 const WebSocket = require('ws');
 const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*" });
 
