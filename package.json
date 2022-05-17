@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "pg": "^8.7.3",
+    "sha3": "^2.1.4",
     "timers": "^0.1.1",
     "timers-promises": "^1.0.1",
     "websocket": "^1.0.34",
