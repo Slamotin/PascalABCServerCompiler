@@ -1,5 +1,5 @@
 
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 8080;
 var pabcexePath = "/opt/pabcnetc/pabcnetc.exe";
 
 const db = require('./database.js');
