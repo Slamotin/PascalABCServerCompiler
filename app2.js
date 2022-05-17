@@ -46,10 +46,10 @@ async function onConnect(wsClient) {
                 case 'SIGNUP':
                     let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
                     console.log('hash: ' + new_hash);
-
+                    checkLogin(jsonMessage.login);
                     //add new user to db
-                    console.log('db.query ' + db.query('insert into users (passhash, nickname, privileges) values ($1, $2, $3)', [new_hash, jsonMessage.login, 'student']))
-                    console.log('getClient() = ' + db.getClient().query('insert into users (passhash, nickname, privileges) values ($1, $2, $3)', [new_hash, jsonMessage.login, 'student']))
+                    signupUser(jsonMessage.login, new_hash, 'student');
+                    //console.log('getClient() = ')
                     //addUser(jsonMessage.login, new_hash);
                     //break;
 					
@@ -137,6 +137,21 @@ function get_hash(login, password) {
     let hash = new SHA3(256);
     hash.update(login + password);
     return hash.digest({ buffer: Buffer.alloc(32), format: 'hex' });
+}
+
+function checkLogin(login) {
+    db.query('select login as login from users where $1', [login], (err, res) => {
+        if (err) {
+            return console.error('error running query', err);
+        }
+
+        console.log('login from db: '+res.rows[0].login)
+    });
+}
+
+function signupUser(login, hash, privileges) {
+
+    return db.query('insert into users (passhash, nickname, privileges) values ($1, $2, $3)', [hash, login, privileges]);
 }
 
 function checkConnectToDatabase() {
