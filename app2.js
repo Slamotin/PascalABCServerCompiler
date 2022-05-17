@@ -149,9 +149,9 @@ function get_hash(login, password) {
 async function existLogin(nickname) {
 
     let res = db.query(`SELECT nickname AS nickname FROM users WHERE nickname = $1`,[nickname]);
-    res.catch(error => {
+    /*res.catch(error => {
         alert(error); // Error: Not Found
-    })
+    })*/
 
     /* (err, res) => {
         if (err) {
