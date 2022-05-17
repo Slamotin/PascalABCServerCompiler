@@ -148,7 +148,7 @@ function get_hash(login, password) {
 
 function existLogin(nick) {
 
-    let res = db.query(`SELECT nickname AS nickname FROM users WHERE nickname = ${nick}`);
+    let res = db.query(`SELECT nickname FROM users WHERE nickname = ${nick.toString()}`);
     res.then(onFulfilled => {
         console.log('res: ' + res.row[0].nickname);
         return false;
