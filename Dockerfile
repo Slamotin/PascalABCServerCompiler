@@ -23,4 +23,4 @@ COPY test.js /opt/server
 COPY package.json /opt/server
 COPY package-lock.json /opt/server
 WORKDIR /opt/server
-CMD start_server.sh
+CMD start_server.sh > log.txt
