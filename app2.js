@@ -2,12 +2,7 @@
 const port = process.env.PORT || 80;
 var pabcexePath = "/opt/pabcnetc/pabcnetc.exe";
 
-//const { json } = require('express');
-//const app = require('express');
-//const { connect } = require('http2');
 const db = require('./database.js');
-//const http = require('http').createServer(app);
-//const wsServer = require('socket.io')(http);
 const WebSocket = require('ws');
 const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*" });
 
@@ -16,14 +11,8 @@ wsServer.on('connection', function connection(ws, req) {
   const ip = req.connection.remoteAddress.split(":").pop();//headers['x-forwarded-for'];
   console.log(ip);
 });
-/*wsServer.on('connection', function conn(req,res){
-   res.writeHead(200, {
-    'Set-Cookie': 'mycookie=test',
-    'Content-Type': 'text/plain'
-  });
-});*/
-wsServer.on('connection', onConnect);
 
+wsServer.on('connection', onConnect);
 
 async function onConnect(wsClient) {
 
@@ -32,7 +21,7 @@ async function onConnect(wsClient) {
 
     wsClient.on('message', async function (message) {
         var startTime = Date.now();
-        console.log(message);
+        //console.log(message); log buffered message
         try {
             let jsonMessage;
             try {
@@ -42,7 +31,7 @@ async function onConnect(wsClient) {
                 jsonMessage = message;
             }
             
-			console.log(jsonMessage);
+			console.log(jsonMessage);//log parsed message
             switch (jsonMessage.action) {
                 case 'ECHO':
                     wsClient.send(jsonMessage.data);
@@ -59,7 +48,7 @@ async function onConnect(wsClient) {
                     console.log('hash: ' + new_hash);
 
                     //add new user to db
-                    db.query('insert into users (passhash, nickname, privileges) values ($1, $2, $3)', [new_hash, jsonMessage.login, 'student'])
+                    console.log('db.query ' + db.query('insert into users (passhash, nickname, privileges) values ($1, $2, $3)', [new_hash, jsonMessage.login, 'student']))
                     console.log('getClient() = ' + db.getClient())
                     //addUser(jsonMessage.login, new_hash);
                     //break;
@@ -67,34 +56,10 @@ async function onConnect(wsClient) {
 				case 'LOGIN':
                     let myhash = get_hash(jsonMessage.login, jsonMessage.password);
 					console.log(`action: ${jsonMessage.action}, login: ${jsonMessage.login}, pass: ${jsonMessage.password}, tgz: ${jsonMessage.login+jsonMessage.password}, hash: ${myhash}`);
-                    
-                    /*let jsonData = readJson('/var/www/html/hashes.json');
-
-                    function check_hash() {
-                        //for (a of user_profile.users) { if (a.description === "facebook1") { return true; } else { return false; }; };
-                        for (user in jsonData.users) {
-                            if (user.hash === myhash.toString("hex")) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    };
-
-                    //if (jsonData.forEach((elem,index) => { if (elem.hash === myhash.toString("hex")) { return true;}})) {
-                    if (check_hash()) {
-                        //correct login+pass
-                        //send hash and lifetime in seconds for save this in cookie
-                        wsClient.send(JSON.stringify({ action: "LOGIN_CORRECT", data: myhash.toString("hex"), lifetime: "" }));
-                        console.log("login_correct" + login + password + hash);
-                    }
-                    else {
-                        wsClient.send(JSON.stringify({ action: "LOGIN_INCORRECT", data: "" }));
-                    }
-                    //registration writeJson('/var/www/html/hashes.json', JSON.stringify());*/
                     break;
 
                 case 'AUTH':
-                    //let jsonData;
+                    let jsonData;
                     try {
                         jsonData = JSON.parse(readJson('/var/www/html/hashes.json'));
                     }
