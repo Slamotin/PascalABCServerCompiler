@@ -149,7 +149,7 @@ function get_hash(login, password) {
 async function existLogin(nick) {
 
     let res = await db.query('SELECT nickname FROM users WHERE nickname = $1',[nick.toString()]);
-    res.then(onFulfilled => {
+    /*res.then(onFulfilled => {
         console.log('res: ' + res.row[0].nickname);
         console.log('res1: ' + res[0]);
         return false;
@@ -157,7 +157,7 @@ async function existLogin(nick) {
     res.then(null, onRejected => {
         console.log('onREjectedError ' + onRejected)
         return true
-    })
+    })*/
 
     console.log('aaaaaaaaaaaaaaa: ' + res)
     /*res.catch(error => {
