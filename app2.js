@@ -159,7 +159,7 @@ async function existLogin(nick) {
         return true
     })*/
 
-    console.log('aaaaaaaaaaaaaaa: ' + res.rows[0])
+    console.log('aaaaaaaaaaaaaaa: ' + res.rows[0].nickname)
     /*res.catch(error => {
         alert(error); // Error: Not Found
     })*/
