@@ -148,7 +148,7 @@ function get_hash(login, password) {
 
 async function existLogin(nickname) {
     
-    let res = await db.query('select nickname as nickname from users where nickname = $1', [nickname];/* (err, res) => {
+    let res = await db.query('select nickname as nickname from users where nickname = $1', [nickname]);/* (err, res) => {
         if (err) {
             return console.error('error running query', err);
         }
