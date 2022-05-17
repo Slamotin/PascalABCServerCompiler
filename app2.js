@@ -160,7 +160,7 @@ async function existLogin(nick) {
         return true
     })*/
 
-    console.log('aaaaaaaaaaaaaaa: ' + res.rows[0])
+    console.log('aaaaaaaaaaaaaaa: ' + res.rows[0] + " nick: " + nick)
     try {
         return res.rows[0].nickname === nick ? true : false
     } catch (e) {
