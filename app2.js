@@ -46,7 +46,7 @@ async function onConnect(wsClient) {
                 case 'SIGNUP':
                     let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
                     console.log('hash: ' + new_hash);
-                    if (await existLogin(jsonMessage.login)) {
+                    if (existLogin(jsonMessage.login)) {
                         
                         wsClient.send(JSON.stringify({ action: "SIGNUP_LOGIN_USED"}))
                     }
@@ -146,14 +146,16 @@ function get_hash(login, password) {
     return hash.digest({ buffer: Buffer.alloc(32), format: 'hex' });
 }
 
-async function existLogin(nick) {
+function existLogin(nick) {
 
     let res = db.query(`SELECT nickname AS nickname FROM users WHERE nickname = ${nick}`);
     res.then(onFulfilled => {
         console.log('res: ' + res.row[0].nickname);
+        return false;
     })
     res.then(null, onRejected => {
         console.log('onREjectedError ' + onRejected)
+        return true
     })
     /*res.catch(error => {
         alert(error); // Error: Not Found
