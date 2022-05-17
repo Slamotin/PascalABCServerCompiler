@@ -46,9 +46,16 @@ async function onConnect(wsClient) {
                 case 'SIGNUP':
                     let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
                     console.log('hash: ' + new_hash);
-                    checkLogin(jsonMessage.login);
-                    //add new user to db
-                    //signupUser(jsonMessage.login, new_hash, 'student');
+                    if (existLogin(jsonMessage.login)) {
+                        
+                        wsServer.send(JSON.stringify({ action: "SIGNUP_LOGIN_USED"}))
+                    }
+                    else {
+                        //add new user to db
+                        console.log('new user: ' + jsonMessage.login);
+                        //signupUser(jsonMessage.login, new_hash, 'student');
+                    }
+                    
                     //console.log('getClient() = ')
                     //addUser(jsonMessage.login, new_hash);
                     //break;
@@ -139,31 +146,36 @@ function get_hash(login, password) {
     return hash.digest({ buffer: Buffer.alloc(32), format: 'hex' });
 }
 
-async function checkLogin(nickname) {
-    /*
-    db.query('select nickname as nickname from users where nickname = $1', [nickname], (err, res) => {
+async function existLogin(nickname) {
+    
+    let res = await db.query('select nickname as nickname from users where nickname = $1', [nickname];/* (err, res) => {
         if (err) {
             return console.error('error running query', err);
         }
 
         console.log('login from db: '+res.rows[0].nickname)
     });*/
-    const { Pool } = require('pg');
+    console.log('res: ' + res.row[0].nickname);
+
+    /*const { Pool } = require('pg');
 
     const pool = new Pool({
         connectionString: 'postgres://troxojbzrlqhko:3c8664d451486b3378c39b12577d5fe6c7229d382982035920568850ad401d9e@ec2-52-212-228-71.eu-west-1.compute.amazonaws.com:5432/df1crp8nniui6p',
         ssl: {
             rejectUnauthorized: false
         }
-    });
+    });*/
 
-    await pool.query('select nickname as nickname from users where nickname = $1', [nickname], (err, res) => {
+    /*await pool.query('select nickname as nickname from users where nickname = $1', [nickname], (err, res) => {
         if (err) {
             return console.error('error running query', err);
         }
-
-        console.log('login from db: ' + res.rows[0].nickname)
-    });
+        try {
+            console.log('login from db: ' + res.rows[0].nickname)
+        } catch (e) {
+            return false;
+        }
+    });*/
 }
 
 function signupUser(login, hash, privileges) {
