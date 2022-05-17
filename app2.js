@@ -146,7 +146,7 @@ function get_hash(login, password) {
     return hash.digest({ buffer: Buffer.alloc(32), format: 'hex' });
 }
 
-function existLogin(nick) {
+async function existLogin(nick) {
 
     let { res } = await db.query('SELECT nickname FROM users WHERE nickname = $1',[nick.toString()]);
     res.then(onFulfilled => {
