@@ -70,14 +70,14 @@ async function onConnect(wsClient) {
                     break;
                 }
                 case 'AUTH_COOKIE': {
-                    if (await existHash('users', jsonMessage.hash)) {
+                    if (await existHashUsers(jsonMessage.hash)) {
                         wsClient.send(JSON.stringify({ action: "AUTH_OK" }))
                     }
                     break;
                 }
                 case 'AUTH_LOGIN': {
                     let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
-                    if (await existLogin(jsonMessage.login) && await existHash('users', new_hash)) {
+                    if (await existLogin(jsonMessage.login) && await existHashUsers(new_hash)) {
                         wsClient.send(JSON.stringify({ action: "LOGIN_CORRECT", hash: new_hash }))
                     }
                     else {
@@ -93,7 +93,7 @@ async function onConnect(wsClient) {
                     let data = new String(jsonMessage.data);
                     console.log(data.toString());
 
-                    if (jsonMessage.hash === 'undefined' || (!existHash(jsonMessage.hash, 'users') && !existHash(jsonMessage.hash, 'guests'))) {
+                    if (jsonMessage.hash === 'undefined' || (!existHashUsers(jsonMessage.hash) && !existHashGuests(jsonMessage.hash))) {
                         wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: `You didn't authenticate, please refresh page` }));
                         break;
                     }
@@ -185,17 +185,19 @@ async function saveFile(passhash, filename, code) {
     return await db.query(query_text, [passhash, filename, code]);
 }
 
-async function existHash(hash, table) {
-    let query_text = 'SELECT passhash FROM $1 WHERE passhash = $2';
-    let res = await db.query(query_text, [table, hash.toString()]);
+async function existHashUsers(hash) {
+    let query_text = 'SELECT passhash FROM users WHERE passhash = $1';
+    let res = await db.query(query_text, [hash.toString()]);
 
     console.log('aaaaaaaaaaaaaaa: ' + res.rows[0] + " nick: " + nick)
-    /*try {
-        return res.rows[0].passhash === hash ? true : false
-    } catch (e) {
-        console.log('catch exists error: ' + e)
-        return false
-    }*/
+    return res.rowCount == 1 ? true : false;
+}
+
+async function existHashGuests(hash) {
+    let query_text = 'SELECT passhash FROM guests WHERE passhash = $1';
+    let res = await db.query(query_text, [hash.toString()]);
+
+    console.log('aaaaaaaaaaaaaaa: ' + res.rows[0] + " nick: " + nick)
     return res.rowCount == 1 ? true : false;
 }
 
