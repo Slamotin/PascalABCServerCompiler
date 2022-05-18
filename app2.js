@@ -35,16 +35,16 @@ async function onConnect(wsClient) {
 
             console.log(jsonMessage);//log parsed message
             switch (jsonMessage.action) {
-                case 'ECHO':
+                case 'ECHO': {
                     wsClient.send(jsonMessage.data);
                     break;
-
-                case 'PING':
+                }
+                case 'PING': {
                     setTimeout(function () {
                         wsClient.send('PONG');
                     }, 2000);
                     break;
-
+                }
                 case 'GUEST_AUTH': {
                     let sugar = Date.now();
                     let hash = get_hash(sugar, sugar);
@@ -52,7 +52,7 @@ async function onConnect(wsClient) {
                     wsClient.send(JSON.stringify({ action: 'GUEST_AUTH_OK', hash: hash }))
                     break;
                 }
-                case 'SIGNUP':
+                case 'SIGNUP': {
                     let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
                     console.log('hash: ' + new_hash);
                     if (await existLogin(jsonMessage.login)) {
@@ -67,13 +67,13 @@ async function onConnect(wsClient) {
                         wsClient.send(JSON.stringify({ action: "SIGNUP_SUCCESSFUL", hash: new_hash }));
                     }
                     break;
-
-                case 'AUTH_COOKIE':
+                }
+                case 'AUTH_COOKIE': {
                     if (await existHash('users', jsonMessage.hash)) {
                         wsClient.send(JSON.stringify({ action: "AUTH_OK" }))
                     }
                     break;
-
+                }
                 case 'AUTH_LOGIN': {
                     let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
                     if (await existLogin(jsonMessage.login) && await existHash('users', new_hash)) {
@@ -84,12 +84,11 @@ async function onConnect(wsClient) {
                     }
                     break;
                 }
-
-                case 'SAVEFILE':
+                case 'SAVEFILE': {
                     let data = new String(jsonMessage.data);
                     break;
-
-                case 'CODE':
+                }
+                case 'CODE': {
                     let data = new String(jsonMessage.data);
                     console.log(data.toString());
 
@@ -142,13 +141,14 @@ async function onConnect(wsClient) {
                         }
                     });
                     break;
-            }
+                }//end case: 'CODE'
+            }//end switch
         } catch (error) {
             console.log('Ошибка: ', error);
         }
         console.log(`Сообщение обработана за: ${Date.now() - startTime} ms`)
 
-    });
+    });//end wsClient.on('message')
     wsClient.on('close', function () {
         console.log('Пользователь отключился');
     });
