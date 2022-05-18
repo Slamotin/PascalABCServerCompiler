@@ -186,7 +186,7 @@ async function saveFile(passhash, filename, code) {
 }
 
 async function existHashUsers(hash) {
-    let query_text = 'SELECT passhash FROM users WHERE passhash = $1';
+    let query_text = 'SELECT nickname FROM users WHERE passhash = $1';
     let res = await db.query(query_text, [hash.toString()]);
 
     console.log('aaaaaaaaaaaaaaa: ' + res.rows[0] + " nick: " + nick)
@@ -197,7 +197,7 @@ async function existHashGuests(hash) {
     let query_text = 'SELECT passhash FROM guests WHERE passhash = $1';
     let res = await db.query(query_text, [hash.toString()]);
 
-    console.log('aaaaaaaaaaaaaaa: ' + res.rows[0] + " nick: " + nick)
+    console.log('aaaaaaaaaaaaaaa: ' + res.rows[0])
     return res.rowCount == 1 ? true : false;
 }
 
