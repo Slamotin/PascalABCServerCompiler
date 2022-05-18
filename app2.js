@@ -66,12 +66,14 @@ async function onConnect(wsClient) {
                         signupUser(jsonMessage.login, new_hash, 'student');
                         wsClient.send(JSON.stringify({ action: "SIGNUP_SUCCESSFUL", hash: new_hash }));
                     }
-                    break;
-
-                case 'AUTH_COOKIE':
-                    if (await existHash('users', jsonMessage.hash)) {
-                        wsClient.send(JSON.stringify({ action: "AUTH_OK" }))
-                    }
+                    
+                    //console.log('getClient() = ')
+                    //addUser(jsonMessage.login, new_hash);
+                    //break;
+					
+				case 'LOGIN':
+                    let myhash = get_hash(jsonMessage.login, jsonMessage.password);
+					console.log(`action: ${jsonMessage.action}, login: ${jsonMessage.login}, pass: ${jsonMessage.password}, tgz: ${jsonMessage.login+jsonMessage.password}, hash: ${myhash}`);
                     break;
 
                 case 'AUTH_LOGIN':
@@ -91,19 +93,9 @@ async function onConnect(wsClient) {
                 case 'CODE':
                     let data = new String(jsonMessage.data);
                     console.log(data.toString());
-
-                    if (jsonMessage.hash === 'undefined' || (!existHash(jsonMessage.hash, 'users') && !existHash(jsonMessage.hash, 'guests'))) {
-                        wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: `You didn't authenticate, please refresh page` }));
-                        break;
-                    }
-                    let filename;
-                    if (jsonMessage.filename === 'undefined') {
-                        filename = jsonMessage.hash + (await getFiles(jsonMessage.hash)).rowCount
-                    } else {
-                        filename = jsonMessage.filename;
-                    }
-                    
-                    exec(`echo "${data.toString()}" > ./user_data/${filename}.pas`, (error, stdout, stderr) => {
+                    var fileName = `p.pas`;
+                    //exec("echo " + '"'+ data.toString() +'"'+ " > p.pas"
+                    exec(`echo "${data.toString()}" > ./user_data/${jsonMessage.id}.pas`, (error, stdout, stderr) => {
     			        if (error) {
     			            console.log(`error: ${error.message}`);
 			            }
