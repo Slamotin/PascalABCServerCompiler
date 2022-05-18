@@ -6,6 +6,7 @@ const db = require('./database.js');
 const { exec } = require("child_process");
 const WebSocket = require('ws');
 const { SHA3 } = require('sha3');
+const { query } = require('./database.js');
 const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*" });
 
 
@@ -166,8 +167,8 @@ async function insertGuest(hash, lifetime) {
 }
 
 async function existLogin(nick) {
-
-    let res = await db.query('SELECT nickname FROM users WHERE nickname = $1', [nick.toString()]);
+    let query_text = 'SELECT nickname FROM users WHERE nickname = $1';
+    let res = await db.query(query_text, [nick.toString()]);
 
     console.log('aaaaaaaaaaaaaaa: ' + res.rows[0] + " nick: " + nick)
     try {
@@ -176,16 +177,17 @@ async function existLogin(nick) {
         console.log('catch exists error: ' + e)
         return false
     }
-    return res.rowCount == 1 ? true : false
+    return res.rowCount == 1 ? true : false;
 }
 
 async function saveFile(passhash, filename, code) {
-    return await db.query('INSERT INTO files (passhash, filename, code) VALUES ($1, $2, $3)', [passhash, filename, code])
+    let query_text = 'INSERT INTO files (passhash, filename, code) VALUES ($1, $2, $3)';
+    return await db.query(query_text, [passhash, filename, code]);
 }
 
 async function existHash(hash, table) {
-
-    let res = await db.query('SELECT passhash FROM $1 WHERE passhash = $2', [table, hash.toString()]);
+    let query_text = 'SELECT passhash FROM $1 WHERE passhash = $2';
+    let res = await db.query(query_text, [table, hash.toString()]);
 
     console.log('aaaaaaaaaaaaaaa: ' + res.rows[0] + " nick: " + nick)
     /*try {
@@ -198,11 +200,12 @@ async function existHash(hash, table) {
 }
 
 async function getFiles(hash) {
-    return await db.query('SELECT filename, code FROM files WHERE passhash = $1', [hash])
+    let query_text = 'SELECT filename, code FROM files WHERE passhash = $1';
+    return await db.query(query_text, [hash]);
 }
 async function signupUser(login, hash, privileges) {
-
-    return await db.query('insert into users (passhash, nickname, privileges) values ($1, $2, $3)', [hash, login, privileges]);
+    let query_text = 'insert into users (passhash, nickname, privileges) values ($1, $2, $3)';
+    return await db.query(query_text, [hash, login, privileges]);
 }
 
 function checkConnectToDatabase() {
