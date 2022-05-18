@@ -46,7 +46,7 @@ async function onConnect(wsClient) {
                     break;
                 }
                 case 'GUEST_AUTH': {
-                    let sugar = Date.now();
+                    let sugar = Date.now().toString();
                     let hash = get_hash(sugar, sugar);
                     insertGuest(hash, 86400);
                     wsClient.send(JSON.stringify({ action: 'GUEST_AUTH_OK', hash: hash }))
