@@ -98,10 +98,10 @@ async function onConnect(wsClient) {
                         break;
                     }
                     let filename;
-                    if (jsonMessage.filename === 'undefined') {
-                        filename = await getFiles(jsonMessage.hash).rowCount
+                    if (jsonMessage.filename === { }) {
+                        filename = jsonMessage.hash + await getFiles(jsonMessage.hash).rowCount
                     } else {
-                        filename = jsonMessage.filename;
+                        filename = jsonMessage.hash + jsonMessage.filename;
                     }
                     console.log('filename: ' + filename + ' filenameJson: ' + jsonMessage.filename)
 
