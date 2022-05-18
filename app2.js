@@ -99,11 +99,11 @@ async function onConnect(wsClient) {
                     }
                     let filename;
                     if (jsonMessage.filename === 'undefined') {
-                        filename = jsonMessage.hash + (await getFiles(jsonMessage.hash)).rowCount
+                        filename = await getFiles(jsonMessage.hash).rowCount
                     } else {
                         filename = jsonMessage.filename;
                     }
-
+                    console.log('filename: ' + filename + ' filenameJson: ' + jsonMessage.filename)
 
                     exec(`echo "${data.toString()}" > ./user_data/${filename}.pas`, (error, stdout, stderr) => {
                         if (error) {
@@ -188,8 +188,7 @@ async function saveFile(passhash, filename, code) {
 async function existHashUsers(hash) {
     let query_text = 'SELECT nickname FROM users WHERE passhash = $1';
     let res = await db.query(query_text, [hash.toString()]);
-
-    console.log('aaaaaaaaaaaaaaa: ' + res.rows[0] + " nick: " + res.rows[0])
+    console.log('aaaaaa users: ' + res.rows[0] + " nick: " + res.rows[0])
     return res.rowCount == 1 ? true : false;
 }
 
@@ -197,7 +196,7 @@ async function existHashGuests(hash) {
     let query_text = 'SELECT passhash FROM guests WHERE passhash = $1';
     let res = await db.query(query_text, [hash.toString()]);
 
-    console.log('aaaaaaaaaaaaaaa: ' + res.rows[0])
+    console.log('aaaaa guests: ' + res.rows[0])
     return res.rowCount == 1 ? true : false;
 }
 
