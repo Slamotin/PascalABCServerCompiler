@@ -1,9 +1,11 @@
 
 const port = process.env.PORT || 8080;
-var pabcexePath = "/opt/pabcnetc/pabcnetc.exe";
+let pabcexePath = "/opt/pabcnetc/pabcnetc.exe";
 
 const db = require('./database.js');
+const { exec } = require("child_process");
 const WebSocket = require('ws');
+const { SHA3 } = require('sha3');
 const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*" });
 
 
@@ -20,7 +22,7 @@ async function onConnect(wsClient) {
     wsClient.send(JSON.stringify({action: "HELLO", data: 'Привет'}));
 
     wsClient.on('message', async function (message) {
-        var startTime = Date.now();
+        let startTime = Date.now();
         //console.log(message); log buffered message
         try {
             let jsonMessage;
@@ -43,65 +45,76 @@ async function onConnect(wsClient) {
                     }, 2000);
                     break;
 
+                case 'GUEST_AUTH':
+                    let sugar = Date.now();
+                    let hash = get_hash(sugar, sugar);
+                    insertGuest(hash, 86400);
+                    wsClient.send(JSON.stringify({ action: 'GUEST_AUTH_OK', hash: hash }))
+                    break;
+
                 case 'SIGNUP':
                     let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
                     console.log('hash: ' + new_hash);
                     if (await existLogin(jsonMessage.login)) {
-                        console.log('exist login true')
-                        wsClient.send(JSON.stringify({ action: "SIGNUP_LOGIN_USED"}))
+                        console.log('exist login true');
+                        wsClient.send(JSON.stringify({ action: "SIGNUP_LOGIN_USED" }));
                     }
                     else {
                         //add new user to db
-                        console.log('exist login false')
+                        console.log('exist login false');
                         console.log('new user: ' + jsonMessage.login);
-                        //signupUser(jsonMessage.login, new_hash, 'student');
+                        signupUser(jsonMessage.login, new_hash, 'student');
+                        wsClient.send(JSON.stringify({ action: "SIGNUP_SUCCESSFUL", hash: new_hash }));
                     }
-                    
-                    //console.log('getClient() = ')
-                    //addUser(jsonMessage.login, new_hash);
-                    //break;
-					
-				case 'LOGIN':
-                    let myhash = get_hash(jsonMessage.login, jsonMessage.password);
-					console.log(`action: ${jsonMessage.action}, login: ${jsonMessage.login}, pass: ${jsonMessage.password}, tgz: ${jsonMessage.login+jsonMessage.password}, hash: ${myhash}`);
+                case 'AUTH_COOKIE':
+                    if (await existHash('users', jsonMessage.hash)) {
+                        wsClient.send(JSON.stringify({ action: "AUTH_OK" }))
+                    }
                     break;
 
-                case 'AUTH':
-                    let jsonData;
-                    try {
-                        jsonData = JSON.parse(readJson('/var/www/html/hashes.json'));
+                case 'AUTH_LOGIN':
+                    let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
+                    if (await existLogin(jsonMessage.login) && await existHash('users', new_hash)) {
+                        wsClient.send(JSON.stringify({ action: "LOGIN_CORRECT", hash: new_hash }))
                     }
-                    catch (e) {
-                        console.log(`File Error: ${e}`);
+                    else {
+                        wsClient.send(JSON.stringify({ action: "LOGIN_INCORRECT" }))
                     }
-                    jsonData.find(el => el.hash === jsonMessage.data);
                     break;
 
                 case 'SAVEFILE':
-                    var data = new String(jsonMessage.data);
+                    let data = new String(jsonMessage.data);
                     break;
 
                 case 'CODE':
-		            const { exec } = require("child_process");
-                    var data = new String(jsonMessage.data);
-                    //var id = new String(jsonMessage.id);
+                    let data = new String(jsonMessage.data);
                     console.log(data.toString());
-                    var fileName = `p.pas`;
-                    //exec("echo " + '"'+ data.toString() +'"'+ " > p.pas"
-                    exec(`echo "${data.toString()}" > ./user_data/${jsonMessage.id}.pas`, (error, stdout, stderr) => {
+
+                    if (jsonMessage.hash === 'undefined' || (!existHash(jsonMessage.hash, 'users') && !existHash(jsonMessage.hash, 'guests'))) {
+                        wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: `You didn't authenticate, please refresh page` }));
+                        break;
+                    }
+                    let filename;
+                    if (jsonMessage.filename === 'undefined') {
+                        filename = jsonMessage.hash + (await getFiles(jsonMessage.hash)).rowCount
+                    } else {
+                        filename = jsonMessage.filename;
+                    }
+                    
+
+                    exec(`echo "${data.toString()}" > ./user_data/${filename}.pas`, (error, stdout, stderr) => {
     			        if (error) {
     			            console.log(`error: ${error.message}`);
 			            }
                         if (stderr) {
     			            console.log(`stderr: ${stderr}`);
-
                         }
                         if (stdout) {
                             console.log(`stdout: ${stdout}`);
                         }
                     });
 
-                    exec(`mono ${pabcexePath} ./user_data/${jsonMessage.id}.pas ./user_data/${jsonMessage.id}.exe`, (error, stdout, stderr) => {
+                    exec(`mono ${pabcexePath} ./user_data/${filename}.pas ./user_data/${filename}.exe`, (error, stdout, stderr) => {
     			        if (error) {
     			            console.log(`error: ${error.message}`);
     			            console.log(`stdout: ${stdout}`);
@@ -109,10 +122,9 @@ async function onConnect(wsClient) {
 			            }
 			            if (stderr) {
     			            console.log(`stderr: ${stderr}`);
-
 			            }
 			            if (!error) {
-                            exec(`mono ./user_data/${jsonMessage.id}.exe`, (error, stdout, stderr) => {
+                            exec(`mono ./user_data/${filename}.exe`, (error, stdout, stderr) => {
     			                if (error) {
     				                console.log(`error: ${error.message}`);
 			                    }
@@ -120,7 +132,8 @@ async function onConnect(wsClient) {
     				                console.log(`stderr: ${stderr}`);
 			                    }
 			                    console.log(`stdout: ${stdout}`);
-								wsClient.send(JSON.stringify({action: "COMPILER_ANSWER", data: stdout}));
+                                wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdout }));
+                                saveFile(jsonMessage.hash, filename, data);
 			                    //wsClient.send(stdout);
 			                });
 			            }
@@ -130,8 +143,6 @@ async function onConnect(wsClient) {
         }   catch (error) {
                 console.log('Ошибка: ', error);
         }
-
-        const { exec } = require("child_process");
         console.log(`Сообщение обработана за: ${Date.now() - startTime} ms`)
 
     });
@@ -141,24 +152,19 @@ async function onConnect(wsClient) {
 }
 
 function get_hash(login, password) {
-    const { SHA3 } = require('sha3');
     let hash = new SHA3(256);
     hash.update(login + password);
     return hash.digest({ buffer: Buffer.alloc(32), format: 'hex' });
 }
 
+async function insertGuest(hash, lifetime) {
+    let data = new Date(Date.now() + lifetime * 1000).toISOString().slice(0, 19).replace('T', ' ');
+    return await db.query('INSERT INTO guests (hash, lifetime) VALUES ($1, $2)', [hash, data]);
+}
+
 async function existLogin(nick) {
 
     let res = await db.query('SELECT nickname FROM users WHERE nickname = $1',[nick.toString()]);
-    /*res.then(onFulfilled => {
-        console.log('res: ' + res.row[0].nickname);
-        console.log('res1: ' + res[0]);
-        return false;
-    })
-    res.then(null, onRejected => {
-        console.log('onREjectedError ' + onRejected)
-        return true
-    })*/
 
     console.log('aaaaaaaaaaaaaaa: ' + res.rows[0] + " nick: " + nick)
     try {
@@ -167,24 +173,33 @@ async function existLogin(nick) {
         console.log('catch exists error: ' + e)
         return false
     }
-    /*res.catch(error => {
-        alert(error); // Error: Not Found
-    })*/
-
-    /* (err, res) => {
-        if (err) {
-            return console.error('error running query', err);
-        }
-
-        console.log('login from db: '+res.rows[0].nickname)
-    });*/
-
-    
+    return res.rowCount == 1 ? true : false
 }
 
-function signupUser(login, hash, privileges) {
+async function saveFile(passhash, filename, code) {
+    return await db.query('INSERT INTO files (passhash, filename, code) VALUES ($1, $2, $3)', [passhash, filename, code])
+}
 
-    return db.query('insert into users (passhash, nickname, privileges) values ($1, $2, $3)', [hash, login, privileges]);
+async function existHash(hash, table) {
+
+    let res = await db.query('SELECT passhash FROM $1 WHERE passhash = $2', [table, hash.toString()]);
+
+    console.log('aaaaaaaaaaaaaaa: ' + res.rows[0] + " nick: " + nick)
+    /*try {
+        return res.rows[0].passhash === hash ? true : false
+    } catch (e) {
+        console.log('catch exists error: ' + e)
+        return false
+    }*/
+    return res.rowCount == 1 ? true : false;
+}
+
+async function getFiles(hash) {
+    return await db.query('SELECT filename, code FROM files WHERE passhash = $1', [hash])
+}
+async function signupUser(login, hash, privileges) {
+
+    return await db.query('insert into users (passhash, nickname, privileges) values ($1, $2, $3)', [hash, login, privileges]);
 }
 
 function checkConnectToDatabase() {

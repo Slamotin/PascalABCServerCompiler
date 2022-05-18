@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-    connectionString: 'postgres://troxojbzrlqhko:3c8664d451486b3378c39b12577d5fe6c7229d382982035920568850ad401d9e@ec2-52-212-228-71.eu-west-1.compute.amazonaws.com:5432/df1crp8nniui6p',
+    connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
@@ -14,6 +14,16 @@ module.exports = {
         const duration = Date.now() - start
         console.log('executed query', { text, duration, rows: res.rowCount })
         return res
+
+        /*res.then(onFulfilled => {
+    console.log('res: ' + res.row[0].nickname);
+    console.log('res1: ' + res[0]);
+    return false;
+})
+res.then(null, onRejected => {
+    console.log('onREjectedError ' + onRejected)
+    return true
+})*/
     },
     async getClient() {
         const client = await pool.connect()
