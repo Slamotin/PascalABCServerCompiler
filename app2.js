@@ -45,13 +45,13 @@ async function onConnect(wsClient) {
                     }, 2000);
                     break;
 
-                case 'GUEST_AUTH':
+                case 'GUEST_AUTH': {
                     let sugar = Date.now();
                     let hash = get_hash(sugar, sugar);
                     insertGuest(hash, 86400);
                     wsClient.send(JSON.stringify({ action: 'GUEST_AUTH_OK', hash: hash }))
                     break;
-
+                }
                 case 'SIGNUP':
                     let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
                     console.log('hash: ' + new_hash);
@@ -67,13 +67,14 @@ async function onConnect(wsClient) {
                         wsClient.send(JSON.stringify({ action: "SIGNUP_SUCCESSFUL", hash: new_hash }));
                     }
                     break;
+
                 case 'AUTH_COOKIE':
                     if (await existHash('users', jsonMessage.hash)) {
                         wsClient.send(JSON.stringify({ action: "AUTH_OK" }))
                     }
                     break;
 
-                case 'AUTH_LOGIN':
+                case 'AUTH_LOGIN': {
                     let new_hash = get_hash(jsonMessage.login, jsonMessage.password);
                     if (await existLogin(jsonMessage.login) && await existHash('users', new_hash)) {
                         wsClient.send(JSON.stringify({ action: "LOGIN_CORRECT", hash: new_hash }))
@@ -82,6 +83,7 @@ async function onConnect(wsClient) {
                         wsClient.send(JSON.stringify({ action: "LOGIN_INCORRECT" }))
                     }
                     break;
+                }
 
                 case 'SAVEFILE':
                     let data = new String(jsonMessage.data);
