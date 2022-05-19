@@ -36,11 +36,14 @@ function handler(connection, i) {
 
 async function myFunc(i) {
         client1[i] = new WebSocketClient();
-        client1[i].connect('ws://nodejs-webcompiler-server.herokuapp.com/:80');
+        client1[i].connect('ws://nodejs-webcompiler-server.herokuapp.com:80');
         //handler.bind(this, this.i);
-        client1[i].on('connect', function (connection) {
+    client1[i].on('connect', function (connection) {
+        setInterval(() => {
             connection.send(JSON.stringify({ action: 'PING', data: code, id: i, fromStartTime: Date.now() - startTime }));
             console.log('i = ', i);
+        }, 5000)
+            
 
             connection.on('error', function (error) {
                 console.log("Connection Error: " + error.toString());
@@ -65,7 +68,7 @@ let client1 = [];
 let start = async function () {
     for (let i = 0; i < 10000; i++) {
         await myFunc(i);
-	await timers.setTimeout(100);
+	await timers.setTimeout(10);
     }
 }
 
