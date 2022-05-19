@@ -7,7 +7,7 @@ const { exec } = require("child_process");
 const WebSocket = require('ws');
 const { SHA3 } = require('sha3');
 const { query } = require('./database.js');
-const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*" });
+const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*", perMessageDeflate: false });
 
 
 wsServer.on('connection', function connection(ws, req) {
@@ -209,13 +209,14 @@ async function signupUser(login, hash, privileges) {
     return await db.query(query_text, [hash, login, privileges]);
 }
 
-function checkConnectToDatabase() {
+const report = () => {
+    gc();
+    const rss = process.memoryUsage().rss / 1024 / 1024;
+    console.log('clients: %d, rss: %d', wss.clients.size, rss);
+};
 
-}
-
-function findUserInDatabase() {
-
-}
+setInterval(report, 30000);
+report();
 
 /*function readJson(jsonPath) {
     const { readFile } = require('fs');
