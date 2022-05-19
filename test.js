@@ -43,9 +43,7 @@ async function myFunc(i) {
         setInterval(() => {
             connection.send(JSON.stringify({ action: 'PING', data: code, id: i, fromStartTime: Date.now() - startTime }));
             console.log('i = ', i);
-        }, 100000)
-            
-
+        }, 10000)
             connection.on('error', function (error) {
                 console.log("Connection Error: " + error.toString());
             });
@@ -60,11 +58,8 @@ async function myFunc(i) {
         })
 
 }
-// Вешаем на него обработчик события подключения к серверу
-
 let startTime = Date.now();
 let client1 = [];
-
 
 let start = async function () {
     for (let i = 0; i < 20000; i++) {
