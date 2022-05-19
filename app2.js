@@ -212,7 +212,7 @@ async function signupUser(login, hash, privileges) {
 const report = () => {
     gc();
     const rss = process.memoryUsage().rss / 1024 / 1024;
-    console.log('clients: %d, rss: %d', wss.clients.size, rss);
+    console.log('clients: %d, rss: %d', wsServer.clients.size, rss);
 };
 
 setInterval(report, 30000);
