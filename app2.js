@@ -6,7 +6,7 @@ const db = require('./database.js');
 const { exec } = require("child_process");
 const WebSocket = require('ws');
 const { SHA3 } = require('sha3');
-const { query } = require('./database.js');
+
 const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*", perMessageDeflate: false });
 
 
@@ -20,7 +20,7 @@ wsServer.on('connection', onConnect);
 async function onConnect(wsClient) {
 
     console.log('Новый пользователь');
-    wsClient.send(JSON.stringify({ action: "HELLO", data: 'Привет' }));
+    wsClient.send(JSON.stringify({ action: "HELLO", data: 'Привет, готово к работе' }));
 
     wsClient.on('message', async function (message) {
         let startTime = Date.now();
@@ -99,13 +99,13 @@ async function onConnect(wsClient) {
                     }
                     let filename;
                     if (jsonMessage.filename === { }) {
-                        filename = jsonMessage.hash + await getFiles(jsonMessage.hash).rowCount
+                        filename = await getFiles(jsonMessage.hash).rowCount
                     } else {
-                        filename = jsonMessage.hash + jsonMessage.filename;
+                        filename = jsonMessage.filename;
                     }
                     console.log('filename: ' + filename + ' filenameJson: ' + jsonMessage.filename)
 
-                    exec(`echo "${data.toString()}" > ./user_data/${filename}.pas`, (error, stdout, stderr) => {
+                    exec(`echo "${data.toString()}" > ./user_data/${jsonMessage.hash}/${filename}.pas`, (error, stdout, stderr) => {
                         if (error) {
                             console.log(`error: ${error.message}`);
                         }
@@ -117,7 +117,7 @@ async function onConnect(wsClient) {
                         }
                     });
 
-                    exec(`mono ${pabcexePath} ./user_data/${filename}.pas ./user_data/${filename}.exe`, (error, stdout, stderr) => {
+                    exec(`mono ${pabcexePath} ./user_data/${jsonMessage.hash}/${filename}.pas ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
                         if (error) {
                             console.log(`error: ${error.message}`);
                             console.log(`stdout: ${stdout}`);
@@ -127,7 +127,7 @@ async function onConnect(wsClient) {
                             console.log(`stderr: ${stderr}`);
                         }
                         if (!error) {
-                            exec(`mono ./user_data/${filename}.exe`, (error, stdout, stderr) => {
+                            exec(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
                                 if (error) {
                                     console.log(`error: ${error.message}`);
                                 }
