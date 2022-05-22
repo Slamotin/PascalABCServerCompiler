@@ -16,6 +16,8 @@
   "author": "Mezijin",
   "license": "ISC",
   "dependencies": {
+    "fs": "0.0.1-security",
+    "https": "^1.0.0",
     "pg": "^8.7.3",
     "sha3": "^2.1.4",
     "timers": "^0.1.1",
