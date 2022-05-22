@@ -98,7 +98,7 @@ async function onConnect(wsClient) {
                         break;
                     }
                     let filename;
-                    if (jsonMessage.filename === { }) {
+                    if (jsonMessage.filename === '') {
                         filename = await getFiles(jsonMessage.hash).rowCount
                     } else {
                         filename = jsonMessage.filename;
