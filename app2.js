@@ -105,7 +105,7 @@ async function onConnect(wsClient) {
                     }
                     console.log('filename: ' + filename + ' filenameJson: ' + jsonMessage.filename)
 
-                    exec(`echo "${data.toString()}" > ./user_data/${jsonMessage.hash}/${filename}.pas`, (error, stdout, stderr) => {
+                    exec(`mkdir -p %{jsonMessage.hash} && echo "${data.toString()}" > ./user_data/${jsonMessage.hash}/${filename}.pas`, (error, stdout, stderr) => {
                         if (error) {
                             console.log(`error: ${error.message}`);
                         }
