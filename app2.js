@@ -46,6 +46,21 @@ async function onConnect(wsClient) {
                     }, 2000);
                     break;
                 }
+                case 'SAVE_CODE': {
+                    if (await existHashGuests(jsonMessage.hash) || await existHashUsers(jsonMessage.hash)) {
+                        saveFile(jsonMessage.hash, jsonMessage.filename, jsonMessage.data, jsonMessage.raw_string);
+                        wsClient.send(JSON.stringify({ action: "SAVE_FILE_OK", data: `File saved successfully`, filename: jsonMessage.filename }));
+                    } else {
+                        wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: `You didn't authenticate, please refresh page` }));
+                    }
+                }
+                case 'GET_OPENED_FILES': {
+                    let res = await db.query('SELECT filename, raw_string FROM files WHERE passhash = $1', [jsonMessage.hash])
+                    if (res.rowCount > 0) {
+                        wsClient.send(JSON.stringify({ action: 'GET_OPENED_FILES_OK', data: JSON.stringify(res) }));
+                    } else { wsClient.send(JSON.stringify({ action: 'NO_OPENED_FILES'}));}
+                    break;
+                }
                 case 'GUEST_AUTH': {
                     let sugar = Date.now().toString();
                     let hash = get_hash(sugar, sugar);
@@ -85,13 +100,10 @@ async function onConnect(wsClient) {
                     }
                     break;
                 }
-                case 'SAVEFILE': {
-                    let data = new String(jsonMessage.data);
-                    break;
-                }
-                case 'CODE': {
-                    let data = new String(jsonMessage.data);
-                    console.log(data.toString());
+                case 'COMPILE_CODE': {
+                    //let data = new String(jsonMessage.data);
+                    //console.log(data.toString());
+                    console.log(jsonMessage.data);
 
                     if (jsonMessage.hash === 'undefined' || (!existHashUsers(jsonMessage.hash) && !existHashGuests(jsonMessage.hash))) {
                         wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: `You didn't authenticate, please refresh page` }));
@@ -137,7 +149,7 @@ async function onConnect(wsClient) {
                                 }
                                 console.log(`stdout: ${stdout}`);
                                 wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdout }));
-                                saveFile(jsonMessage.hash, filename, data);
+                                saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
                                 //wsClient.send(stdout);
                             });
                         }
@@ -181,9 +193,15 @@ async function existLogin(nick) {
     return res.rowCount == 1 ? true : false;
 }
 
-async function saveFile(passhash, filename, code) {
-    let query_text = 'INSERT INTO files (passhash, filename, code) VALUES ($1, $2, $3)';
-    return await db.query(query_text, [passhash, filename, code]);
+async function saveFile(passhash, filename, code, raw_string) {
+    let query_text_update = 'UPDATE files SET code = $1, raw_string = $2 WHERE passhash = $3 AND filename = $4 returning filename';
+    res = await db.query(query_text, [code, raw_string, passhash, filename]);
+    if (res.rowCount == 1) {
+        return res;
+    } else if (res.rowCount == 0) {
+        let query_text = 'INSERT INTO files (passhash, filename, code, raw_string) VALUES ($1, $2, $3, $4)';
+        return await db.query(query_text, [passhash, filename, code, raw_string]);
+    }
 }
 
 async function existHashUsers(hash) {
