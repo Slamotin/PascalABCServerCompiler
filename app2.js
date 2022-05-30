@@ -205,7 +205,7 @@ async function existLogin(nick) {
 
 async function saveFile(passhash, filename, code, raw_string) {
     let query_text_update = 'UPDATE files SET code = $1, raw_string = $2 WHERE passhash = $3 AND filename = $4 returning filename';
-    res = await db.query(query_text, [code, raw_string, passhash, filename]);
+    res = await db.query(query_text_update, [code, raw_string, passhash, filename]);
     if (res.rowCount == 1) {
         return res;
     } else if (res.rowCount == 0) {
