@@ -6,6 +6,7 @@ const db = require('./database.js');
 const { exec } = require("child_process");
 const WebSocket = require('ws');
 const { SHA3 } = require('sha3');
+const { Hash } = require('crypto');
 
 const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*", perMessageDeflate: false });
 
@@ -61,11 +62,17 @@ async function onConnect(wsClient) {
                     } else { wsClient.send(JSON.stringify({ action: 'NO_OPENED_FILES'}));}
                     break;
                 }
-                case 'GUEST_AUTH': {
+                case 'GET_FILE': {
+                    getFile(jsonMessage.filename, jsonMessage.hash)
+                    wsClient.send(JSON.stringify({ action: 'TAKE_FILE', raw_string: JSON.stringify(getFile(jsonMessage.filename, jsonMessage.hash)) }))
+                    break;
+                }
+
+                case 'NEW_GUEST': {
                     let sugar = Date.now().toString();
                     let hash = get_hash(sugar, sugar);
                     insertGuest(hash, 86400);
-                    wsClient.send(JSON.stringify({ action: 'GUEST_AUTH_OK', hash: hash }))
+                    wsClient.send(JSON.stringify({ action: 'NEW_GUEST_REGISTRATION_OK', hash: hash }))
                     break;
                 }
                 case 'SIGNUP': {
@@ -86,7 +93,10 @@ async function onConnect(wsClient) {
                 }
                 case 'AUTH_COOKIE': {
                     if (await existHashUsers(jsonMessage.hash)) {
-                        wsClient.send(JSON.stringify({ action: "AUTH_OK" }))
+                        //give all files, give another tabs
+                        wsClient.send(JSON.stringify({ action: "AUTH_OK", files: JSON.stringify(getAllFiles(jsonMessage.hash)) }))
+                    } else if (await existHashGuests(jsonMessage.hash)) {
+                        wsClient.send(JSON.stringify({ action: "GUEST_AUTH_OK", files: JSON.stringify(getAllFiles(jsonMessage.hash)) }))
                     }
                     break;
                 }
@@ -111,7 +121,7 @@ async function onConnect(wsClient) {
                     }
                     let filename;
                     if (jsonMessage.filename == '') {
-                        let rowcount = await getFiles(jsonMessage.hash);
+                        let rowcount = await getAllFiles(jsonMessage.hash);
                         filename = rowcount.rowCount;
                     } else {
                         filename = jsonMessage.filename;
@@ -219,8 +229,12 @@ async function existHashGuests(hash) {
     return res.rowCount == 1 ? true : false;
 }
 
-async function getFiles(hash) {
-    let query_text = 'SELECT filename, code FROM files WHERE passhash = $1';
+async function getFile(filename, hash) {
+    let query_text = 'SELECT raw_string FROM files WHERE passhash = $1 AND filename = $2';
+    return await db.query(query_text, [hash, filename]);
+}
+async function getAllFiles(hash) {
+    let query_text = 'SELECT filename, code, raw_string FROM files WHERE passhash = $1';
     return await db.query(query_text, [hash]);
 }
 async function signupUser(login, hash, privileges) {
