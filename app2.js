@@ -55,13 +55,7 @@ async function onConnect(wsClient) {
                         wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: `You didn't authenticate, please refresh page` }));
                     }
                 }
-                /*case 'GET_OPENED_FILES': {
-                    let res = await db.query('SELECT filename, raw_string FROM files WHERE passhash = $1', [jsonMessage.hash])
-                    if (res.rowCount > 0) {
-                        wsClient.send(JSON.stringify({ action: 'GET_OPENED_FILES_OK', data: JSON.stringify(res) }));
-                    } else { wsClient.send(JSON.stringify({ action: 'NO_OPENED_FILES'}));}
-                    break;
-                }*/
+
                 case 'GET_FILE': {
                     getFile(jsonMessage.filename, jsonMessage.hash)
                     wsClient.send(JSON.stringify({ action: 'TAKE_FILE', raw_string: JSON.stringify(getFile(jsonMessage.filename, jsonMessage.hash)) }))
