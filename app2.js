@@ -47,7 +47,7 @@ async function onConnect(wsClient) {
                     }, 2000);
                     break;
                 }
-                case 'SAVE_CODE': {
+                case 'SAVE_FILE': {
                     if (await existHashGuests(jsonMessage.hash) || await existHashUsers(jsonMessage.hash)) {
                         saveFile(jsonMessage.hash, jsonMessage.filename, jsonMessage.data, jsonMessage.raw_string);
                         wsClient.send(JSON.stringify({ action: "SAVE_FILE_OK", data: `File saved successfully`, filename: jsonMessage.filename }));
@@ -55,19 +55,18 @@ async function onConnect(wsClient) {
                         wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: `You didn't authenticate, please refresh page` }));
                     }
                 }
-                case 'GET_OPENED_FILES': {
+                /*case 'GET_OPENED_FILES': {
                     let res = await db.query('SELECT filename, raw_string FROM files WHERE passhash = $1', [jsonMessage.hash])
                     if (res.rowCount > 0) {
                         wsClient.send(JSON.stringify({ action: 'GET_OPENED_FILES_OK', data: JSON.stringify(res) }));
                     } else { wsClient.send(JSON.stringify({ action: 'NO_OPENED_FILES'}));}
                     break;
-                }
+                }*/
                 case 'GET_FILE': {
                     getFile(jsonMessage.filename, jsonMessage.hash)
                     wsClient.send(JSON.stringify({ action: 'TAKE_FILE', raw_string: JSON.stringify(getFile(jsonMessage.filename, jsonMessage.hash)) }))
                     break;
                 }
-
                 case 'NEW_GUEST': {
                     let sugar = Date.now().toString();
                     let hash = get_hash(sugar, sugar);
@@ -97,6 +96,8 @@ async function onConnect(wsClient) {
                         wsClient.send(JSON.stringify({ action: "AUTH_OK", files: JSON.stringify(getAllFiles(jsonMessage.hash)) }))
                     } else if (await existHashGuests(jsonMessage.hash)) {
                         wsClient.send(JSON.stringify({ action: "GUEST_AUTH_OK", files: JSON.stringify(getAllFiles(jsonMessage.hash)) }))
+                    } else {
+                        wsClient.send(JSON.stringify({ action: "TOKEN_NOT_VALID", data: `You didn't authenticate, please refresh page` }));
                     }
                     break;
                 }
