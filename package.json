@@ -16,6 +16,8 @@
   "author": "Mezijin",
   "license": "ISC",
   "dependencies": {
+    "child_process": "^1.0.2",
+    "crypto": "^1.0.1",
     "fs": "0.0.1-security",
     "https": "^1.0.0",
     "pg": "^8.7.3",

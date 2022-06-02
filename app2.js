@@ -2,7 +2,7 @@
 const port = process.env.PORT || 8080;
 let pabcexePath = "/opt/pabcnetc/pabcnetc.exe";
 
-const db = require('./database.js');
+const db = require('./database.js') || require('database.js');
 const { exec } = require("child_process");
 const WebSocket = require('ws');
 const { SHA3 } = require('sha3');
@@ -21,7 +21,7 @@ wsServer.on('connection', onConnect);
 async function onConnect(wsClient) {
 
     console.log('Новый пользователь');
-    wsClient.send(JSON.stringify({ action: "HELLO", data: 'Привет, готово к работе' }));
+    wsClient.send(JSON.stringify({ action: "HELLO", data: 'Привет, готово к работе!' }));
 
     wsClient.on('message', async function (message) {
         let startTime = Date.now();
@@ -96,7 +96,9 @@ async function onConnect(wsClient) {
                         //give all files, give another tabs
                         wsClient.send(JSON.stringify({ action: "AUTH_OK", files: JSON.stringify(getAllFiles(jsonMessage.hash)) }))
                     } else if (await existHashGuests(jsonMessage.hash)) {
-                        wsClient.send(JSON.stringify({ action: "GUEST_AUTH_OK", files: JSON.stringify(getAllFiles(jsonMessage.hash)) }))
+                        let gAF = getAllFiles(jsonMessage.hash);
+                        console.log('getAllFiles: ' + gAF + '\n' + gAF.rows[0])
+                        wsClient.send(JSON.stringify({ action: "GUEST_AUTH_OK", files: JSON.stringify(gAF) }))
                     } else {
                         wsClient.send(JSON.stringify({ action: "TOKEN_NOT_VALID", data: `You didn't authenticate, please refresh page` }));
                     }
@@ -254,8 +256,8 @@ const report = () => {
     console.log('clients: %d, rss: %d', wsServer.clients.size, rss);
 };
 
-setInterval(report, 30000);
-report();
+//setInterval(report, 30000);
+//report();
 
 /*function readJson(jsonPath) {
     const { readFile } = require('fs');
