@@ -61,6 +61,12 @@ async function onConnect(wsClient) {
                     wsClient.send(JSON.stringify({ action: 'TAKE_FILE', raw_string: JSON.stringify(getFile(jsonMessage.filename, jsonMessage.hash)) }))
                     break;
                 }
+
+                case 'DELETE_FILE': {
+                    deleteFile(jsonMessage.filename, jsonMessage.hash);
+                    wsClient.send(JSON.stringify({ action: 'DELETE_SUCCESSFUL', filename: jsonMessage.filename }))
+                    break;
+                }
                 case 'NEW_GUEST': {
                     let sugar = Date.now().toString();
                     let hash = get_hash(sugar, sugar);
@@ -231,6 +237,10 @@ async function getFile(filename, hash) {
 async function getAllFiles(hash) {
     let query_text = 'SELECT filename, code, raw_string FROM files WHERE passhash = $1';
     return await db.query(query_text, [hash]);
+}
+async function deleteFile(filename, hash) {
+    let query_text = 'DELETE FROM files WHERE passhash = $1 AND filename = $2';
+    return await db.query(query_text, [hash, filename]);
 }
 async function signupUser(login, hash, privileges) {
     let query_text = 'insert into users (passhash, nickname, privileges) values ($1, $2, $3)';
