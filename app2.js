@@ -94,9 +94,9 @@ async function onConnect(wsClient) {
                 case 'AUTH_COOKIE': {
                     if (await existHashUsers(jsonMessage.hash)) {
                         //give all files, give another tabs
-                        wsClient.send(JSON.stringify({ action: "AUTH_OK", files: JSON.stringify(getAllFiles(jsonMessage.hash)) }))
+                        wsClient.send(JSON.stringify({ action: "AUTH_OK", files: JSON.stringify(await getAllFiles(jsonMessage.hash)) }))
                     } else if (await existHashGuests(jsonMessage.hash)) {
-                        let gAF = getAllFiles(jsonMessage.hash);
+                        let gAF = await getAllFiles(jsonMessage.hash);
                         console.log('getAllFiles: ' + gAF + '\n' + gAF.rows[0])
                         wsClient.send(JSON.stringify({ action: "GUEST_AUTH_OK", files: JSON.stringify(gAF) }))
                     } else {
