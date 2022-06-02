@@ -58,8 +58,8 @@ async function onConnect(wsClient) {
                 }
 
                 case 'GET_FILE': {
-                    getFile(jsonMessage.filename, jsonMessage.hash)
-                    wsClient.send(JSON.stringify({ action: 'TAKE_FILE', raw_string: JSON.stringify(getFile(jsonMessage.filename, jsonMessage.hash)) }))
+                    let file = await getFile(jsonMessage.filename, jsonMessage.hash);
+                    wsClient.send(JSON.stringify({ action: 'TAKE_FILE', raw_string: JSON.stringify(file) }))
                     break;
                 }
 
