@@ -54,6 +54,7 @@ async function onConnect(wsClient) {
                     } else {
                         wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: `You didn't authenticate, please refresh page` }));
                     }
+                    break;
                 }
 
                 case 'GET_FILE': {
