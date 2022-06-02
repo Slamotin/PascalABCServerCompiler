@@ -223,7 +223,7 @@ async function existHashUsers(hash) {
 }
 
 async function existHashGuests(hash) {
-    let query_text = 'SELECT passhash FROM guests WHERE passhash = $1';
+    let query_text = 'SELECT hash FROM guests WHERE hash = $1';
     let res = await db.query(query_text, [hash.toString()]);
 
     console.log('aaaaa guests: ' + res.rows[0])
