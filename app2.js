@@ -63,6 +63,16 @@ async function onConnect(wsClient) {
                     break;
                 }
 
+                case 'GET_ALL_FILES': {
+                    if (await existHashGuests(jsonMessage.hash) || await existHashUsers(jsonMessage.hash)) {
+                        let gAF = await getAllFiles(jsonMessage.hash);
+                        wsClient.send(JSON.stringify({ action: "AUTH_OK", files: JSON.stringify(gAF) })); //we can use the same function
+                    } else {
+                        wsClient.send(JSON.stringify({ action: "TOKEN_NOT_VALID", data: `You didn't authenticate, please refresh page` }));
+                    }
+                    break;
+                }
+
                 case 'DELETE_FILE': {
                     deleteFile(jsonMessage.filename, jsonMessage.hash);
                     wsClient.send(JSON.stringify({ action: 'DELETE_SUCCESSFUL', filename: jsonMessage.filename }))
