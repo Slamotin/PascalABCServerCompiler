@@ -65,8 +65,12 @@ async function onConnect(wsClient) {
 
                 case 'GET_ALL_FILES': {
                     if (await existHashGuests(jsonMessage.hash) || await existHashUsers(jsonMessage.hash)) {
-                        let gAF = await getAllFiles(jsonMessage.hash);
-                        wsClient.send(JSON.stringify({ action: "AUTH_OK", files: JSON.stringify(gAF) })); //we can use the same function
+                        let res = await db.query('SELECT nickname FROM users WHERE passhash = $1', [jsonMessage.hash]);
+                        wsClient.send(JSON.stringify({
+                            action: "AUTH_OK"
+                            , nickname: res.rows[0]
+                            , files: JSON.stringify(await getAllFiles(jsonMessage.hash))
+                        })); //we can use the same function AUTH_OK
                     } else {
                         wsClient.send(JSON.stringify({ action: "TOKEN_NOT_VALID", data: `You didn't authenticate, please refresh page` }));
                     }
@@ -104,11 +108,11 @@ async function onConnect(wsClient) {
                 case 'AUTH_COOKIE': {
                     if (await existHashUsers(jsonMessage.hash)) {
                         //give all files, give another tabs
-                        wsClient.send(JSON.stringify({ action: "AUTH_OK", files: JSON.stringify(await getAllFiles(jsonMessage.hash)) }))
+                        let res = await db.query('SELECT nickname FROM users WHERE passhash = $1', [jsonMessage.hash])
+                        wsClient.send(JSON.stringify({ action: "AUTH_OK", nickname: res.rows[0], files: JSON.stringify(await getAllFiles(jsonMessage.hash)) }))
                     } else if (await existHashGuests(jsonMessage.hash)) {
-                        let gAF = await getAllFiles(jsonMessage.hash);
-                        console.log('getAllFiles: ' + gAF + '\n' + gAF.rows[0])
-                        wsClient.send(JSON.stringify({ action: "GUEST_AUTH_OK", files: JSON.stringify(gAF) }))
+                        //console.log('getAllFiles: ' + gAF + '\n' + gAF.rows[0])
+                        wsClient.send(JSON.stringify({ action: "GUEST_AUTH_OK", files: JSON.stringify(await getAllFiles(jsonMessage.hash)) }))
                     } else {
                         wsClient.send(JSON.stringify({ action: "TOKEN_NOT_VALID", data: `You didn't authenticate, please refresh page` }));
                     }
