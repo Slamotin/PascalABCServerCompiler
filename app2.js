@@ -192,6 +192,7 @@ async function onConnect(wsClient) {
                             });
 
                             wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
+                            console.log('send data: ', stdData)
                             saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
 
                             
