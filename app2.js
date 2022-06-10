@@ -3,7 +3,7 @@ const port = process.env.PORT || 8080;
 let pabcexePath = "/opt/pabcnetc/pabcnetc.exe";
 
 const db = require('./database.js') || require('database.js');
-const { exec } = require("child_process");
+const { exec, spawn } = require("child_process");
 const WebSocket = require('ws');
 const { SHA3 } = require('sha3');
 const { Hash } = require('crypto');
@@ -168,7 +168,37 @@ async function onConnect(wsClient) {
                             console.log(`stderr: ${stderr}`);
                         }
                         if (!error) {
-                            exec(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
+                            let stdData = '';
+                            let child = spawn(`mono ${pabcexePath} ./user_data/${jsonMessage.hash}/${filename}.pas ./user_data/${jsonMessage.hash}/${filename}.exe`);
+                            child.stdin.setDefaultEncoding('utf-8');
+                            child.stdin.write(jsonMessage.stdin + '\r\n');
+                            child.stdout.on('data', (data) => {
+                                console.log(`stdout: ${data}`);
+                                stdData += data;
+                            });
+                            child.stderr.on('data', (error) => {
+                                console.log()
+                            });
+                            child.on(error, (error) => {
+                                console.log('CHild process error: ' + error)
+                            });
+                            child.on('close', (code) => {
+                                child.stdin.end();
+                                child.stdout.end();
+                                child.stderr.end();
+                                if (code !== 0) {
+                                    console.log(`grep process exited with code ${code}`);
+                                }
+                            });
+
+                            wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
+                            saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
+
+                            
+                            child.stdin.end();
+                            child.stdout.end();
+                            child.stderr.end();
+                            /*exec(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
                                 if (error) {
                                     console.log(`error: ${error.message}`);
                                 }
@@ -179,7 +209,7 @@ async function onConnect(wsClient) {
                                 wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdout }));
                                 saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
                                 //wsClient.send(stdout);
-                            });
+                            });*/
                         }
                     });
                     break;
