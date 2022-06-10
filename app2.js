@@ -169,7 +169,7 @@ async function onConnect(wsClient) {
                         }
                         if (!error) {
                             let stdData = '';
-                            let child = spawn(`mono ${pabcexePath} ./user_data/${jsonMessage.hash}/${filename}.pas ./user_data/${jsonMessage.hash}/${filename}.exe`);
+                            let child = spawn(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`);
                             child.stdin.setDefaultEncoding('utf-8');
                             child.stdin.write(jsonMessage.stdin + '\r\n');
                             child.stdout.on('data', (data) => {
