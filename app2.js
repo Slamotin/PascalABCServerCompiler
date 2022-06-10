@@ -170,6 +170,7 @@ async function onConnect(wsClient) {
                         if (!error) {
                             let stdData = 'Answer: ';
                             let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`]);
+                            child();
                             child.stdin.setDefaultEncoding('utf-8');
                             child.stdin.write(jsonMessage.stdin + '\r\n');
                             child.stdout.on('data', (data) => {
@@ -189,16 +190,14 @@ async function onConnect(wsClient) {
                                 if (code !== 0) {
                                     console.log(`grep process exited with code ${code}`);
                                 }
+                                wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
+                                console.log('send data: ', stdData)
+                                saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
                             });
 
-                            wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
-                            console.log('send data: ', stdData)
-                            saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
+
 
                             
-                            child.stdin.end();
-                            child.stdout.end();
-                            child.stderr.end();
                             /*exec(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
                                 if (error) {
                                     console.log(`error: ${error.message}`);
