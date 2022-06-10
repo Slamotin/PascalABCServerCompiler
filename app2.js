@@ -168,7 +168,7 @@ async function onConnect(wsClient) {
                             console.log(`stderr: ${stderr}`);
                         }
                         if (!error) {
-                            let stdData = '';
+                            let stdData = 'Answer: ';
                             let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`]);
                             child.stdin.setDefaultEncoding('utf-8');
                             child.stdin.write(jsonMessage.stdin + '\r\n');
