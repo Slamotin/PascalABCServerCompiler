@@ -177,7 +177,7 @@ async function onConnect(wsClient) {
                                 stdData += data;
                             });
                             child.stderr.on('data', (error) => {
-                                console.log()
+                                console.log('child error: ' + error)
                             });
                             child.on(error, (error) => {
                                 console.log('CHild process error: ' + error)
