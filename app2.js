@@ -168,7 +168,7 @@ async function onConnect(wsClient) {
                             console.log(`stderr: ${stderr}`);
                         }
                         if (!error) {
-                            /*let stdData = 'Answer: ';
+                            let stdData = 'Answer: ';
                             let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`]);
                             child.stdin.setDefaultEncoding('utf-8');
                             child.stdin.write(jsonMessage.stdin + '\r\n');
@@ -192,12 +192,12 @@ async function onConnect(wsClient) {
                                 wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
                                 console.log('send data: ', stdData)
                                 saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
-                            });*/
+                            });
 
 
 
                             
-                            exec(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
+                            /*exec(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
                                 if (error) {
                                     console.log(`error: ${error.message}`);
                                 }
@@ -208,7 +208,7 @@ async function onConnect(wsClient) {
                                 wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdout }));
                                 saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
                                 //wsClient.send(stdout);
-                            });
+                            });*/
                         }
                     });
                     break;
