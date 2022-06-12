@@ -299,8 +299,8 @@ const report = () => {
     console.log('clients: %d, rss: %d', wsServer.clients.size, rss);
 };
 
-//setInterval(report, 30000);
-//report();
+setInterval(report, 30000);
+report();
 
 /*function readJson(jsonPath) {
     const { readFile } = require('fs');
