@@ -177,6 +177,7 @@ async function onConnect(wsClient) {
                             child.stdout.on('data', (data) => {
                                 console.log(`stdout: ${data}`);
                                 stdData += data;
+                                pidusage(child.pid, function (err, stats) { console.log(stats); });
                             });
                             child.stderr.on('data', (error) => {
                                 console.log('child error: ' + error)
@@ -195,7 +196,7 @@ async function onConnect(wsClient) {
                                 console.log('send data: ', stdData)
                                 saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
                             });
-                            pidusage(child.pid, function (err, stats) { console.log(stats); });
+                            
 
 
 

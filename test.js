@@ -37,7 +37,7 @@ function handler(connection, i) {
 async function myFunc(i) {
         client1[i] = new WebSocketClient();
         //client1[i].connect('wss://nodejs-webcompiler-server.herokuapp.com:433');
-        client1[i].connect('ws://192.168.88.17:8080');
+        client1[i].connect('ws://127.0.0.1:8080');
 //handler.bind(this, this.i);
     client1[i].on('connect', function (connection) {
 //        setInterval(() => {
