@@ -41,7 +41,7 @@ async function myFunc(i) {
 //handler.bind(this, this.i);
     client1[i].on('connect', function (connection) {
 //        setInterval(() => {
-            connection.send(JSON.stringify({ action: 'COMPILE_CODE', data: code, id: i, fromStartTime: Date.now() - startTime }));
+        connection.send(JSON.stringify({ action: 'COMPILE_CODE', data: code, hash: c7fa4136956af3b221021f5a197d2a4ca553899aaa2ccfa05e852fa0502356ea, id: i, fromStartTime: Date.now() - startTime }));
             console.log('i = ', i);
  //       }, 1000000)
             connection.on('error', function (error) {
