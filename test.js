@@ -68,7 +68,7 @@ let startTime = Date.now();
 let client1 = [];
 
 let start = async function () {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 10000; i++) {
         await myFunc(i);
 	await timers.setTimeout(10);
     }
