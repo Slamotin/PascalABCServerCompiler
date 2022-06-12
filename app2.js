@@ -6,7 +6,9 @@ const db = require('./database.js') || require('database.js');
 const { exec, spawn } = require("child_process");
 const WebSocket = require('ws');
 const { SHA3 } = require('sha3');
-const { Hash } = require('crypto');
+//const { Hash } = require('crypto');
+
+const pidusage = require('pidusage');
 
 const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*", perMessageDeflate: false });
 
@@ -193,6 +195,7 @@ async function onConnect(wsClient) {
                                 console.log('send data: ', stdData)
                                 saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
                             });
+                            pidusage(child.pid, function (err, stats) { console.log(stats); });
 
 
 
@@ -294,9 +297,10 @@ async function signupUser(login, hash, privileges) {
 }
 
 const report = () => {
-    gc();
+    global.gc();
     const rss = process.memoryUsage().rss / 1024 / 1024;
-    console.log('clients: %d, rss: %d', wsServer.clients.size, rss);
+    let heap = process.memoryUsage().heapUsed / 1024 / 1024;
+    console.log('clients: %d, rss: %d, heap %d', wsServer.clients.size, rss, heap);
 };
 
 setInterval(report, 30000);

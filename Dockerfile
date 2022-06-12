@@ -27,4 +27,4 @@ COPY start_server.sh /opt/server
 RUN chmod 0755 /opt/server/start_server.sh
 RUN chmod 0755 /opt/server/log.txt
 
-CMD npm install pg ws sha3 https fs && node --expose-gc app2.js
+CMD npm install pg ws child_process sha3 https fs pidusage && node --expose-gc app2.js
