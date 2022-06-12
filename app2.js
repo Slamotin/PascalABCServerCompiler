@@ -6,6 +6,7 @@ const db = require('./database.js') || require('database.js');
 const { exec, spawn } = require("child_process");
 const WebSocket = require('ws');
 const { SHA3 } = require('sha3');
+const os = require('os');
 //const { Hash } = require('crypto');
 
 const pidusage = require('pidusage');
@@ -170,14 +171,17 @@ async function onConnect(wsClient) {
                             console.log(`stderr: ${stderr}`);
                         }
                         if (!error) {
-                            let stdData = 'Answer: ';
+                            processQueue.push('mono');
+                            processQueue.push([`./user_data/${jsonMessage.hash}/${filename}.exe`]);
+                            /*let stdData = 'Answer: ';
                             let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`]);
                             child.stdin.setDefaultEncoding('utf-8');
                             child.stdin.write(jsonMessage.stdin + '\r\n');
                             child.stdout.on('data', (data) => {
                                 console.log(`stdout: ${data}`);
                                 stdData += data;
-                                pidusage(child.pid, function (err, stats) { console.log(stats); });
+                                //pidusage(child.pid, function (err, stats) { console.log(stats); });
+                                //console.log(child.memoryUsage())
                             });
                             child.stderr.on('data', (error) => {
                                 console.log('child error: ' + error)
@@ -195,12 +199,9 @@ async function onConnect(wsClient) {
                                 wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
                                 console.log('send data: ', stdData)
                                 saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
-                            });
-                            
+                            });*/
 
 
-
-                            
                             /*exec(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
                                 if (error) {
                                     console.log(`error: ${error.message}`);
@@ -228,6 +229,43 @@ async function onConnect(wsClient) {
         console.log('Пользователь отключился');
     });
 }
+var processQueue = [];
+async function spawnProcessQueue() {
+    setInterval(() => {
+        console.log('freemem: ' + os.freemem);
+        if (os.freemem > 134217728) {
+            if (processQueue[0] && processQueue[1]) {
+                let stdData = '';
+                let child = spawn(processQueue.shift(), processQueue.shift());
+                child.stdin.setDefaultEncoding('utf-8');
+                child.stdin.write(jsonMessage.stdin + '\r\n');
+                child.stdout.on('data', (data) => {
+                    console.log(`stdout: ${data}`);
+                    stdData += data;
+                    pidusage(child.pid, function (err, stats) { console.log(stats); });
+                });
+                child.stderr.on('data', (error) => {
+                    console.log('child error: ' + error)
+                });
+                child.on(error, (error) => {
+                    console.log('CHild process error: ' + error)
+                });
+                child.on('close', (code) => {
+                    child.stdin.end();
+                    child.stdout.end();
+                    child.stderr.end();
+                    if (code !== 0) {
+                        console.log(`grep process exited with code ${code}`);
+                    }
+                    wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
+                    console.log('send data: ', stdData)
+                    saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
+                });
+            }
+        };
+    }, 500);
+};
+
 
 function get_hash(login, password) {
     let hash = new SHA3(256);
@@ -304,8 +342,17 @@ const report = () => {
     console.log('clients: %d, rss: %d, heap %d', wsServer.clients.size, rss, heap);
 };
 
+const takeMemoryLimit = () => {
+    exec(`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`, (error, stdout, stderr) => {
+        console.log('memoryLimit: %d', stdout)
+        return parseInt(stdout);
+    })
+};
+
 setInterval(report, 30000);
 report();
+var memoryLimit = takeMemoryLimit();
+spawnProcessQueue();
 
 /*function readJson(jsonPath) {
     const { readFile } = require('fs');
