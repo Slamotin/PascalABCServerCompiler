@@ -53,9 +53,11 @@ async function onConnect(wsClient) {
                 case 'SAVE_FILE': {
                     if (await existHashGuests(jsonMessage.hash) || await existHashUsers(jsonMessage.hash)) {
                         saveFile(jsonMessage.hash, jsonMessage.filename, jsonMessage.data, jsonMessage.raw_string);
-                        wsClient.send(JSON.stringify({ action: "SAVE_FILE_OK", data: `File saved successfully`, filename: jsonMessage.filename }));
+                        //`File saved successfully`
+                        wsClient.send(JSON.stringify({ action: "SAVE_FILE_OK", data: 'Файл сохранён успешно', filename: jsonMessage.filename }));
                     } else {
-                        wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: `You didn't authenticate, please refresh page` }));
+                        //`You didn't authenticate, please refresh page`
+                        wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: 'Вы не аутентифицированы, пожалуйста перезагрузите страницу. ' }));
                     }
                     break;
                 }
@@ -75,7 +77,8 @@ async function onConnect(wsClient) {
                             , files: JSON.stringify(await getAllFiles(jsonMessage.hash))
                         })); //we can use the same function AUTH_OK
                     } else {
-                        wsClient.send(JSON.stringify({ action: "TOKEN_NOT_VALID", data: `You didn't authenticate, please refresh page` }));
+                        //`You didn't authenticate, please refresh page`
+                        wsClient.send(JSON.stringify({ action: "TOKEN_NOT_VALID", data: 'Вы не аутентифицированы, пожалуйста перезагрузите страницу. ' }));
                     }
                     break;
                 }
@@ -117,7 +120,8 @@ async function onConnect(wsClient) {
                         //console.log('getAllFiles: ' + gAF + '\n' + gAF.rows[0])
                         wsClient.send(JSON.stringify({ action: "GUEST_AUTH_OK", files: JSON.stringify(await getAllFiles(jsonMessage.hash)) }))
                     } else {
-                        wsClient.send(JSON.stringify({ action: "TOKEN_NOT_VALID", data: `You didn't authenticate, please refresh page` }));
+                        //`You didn't authenticate, please refresh page`
+                        wsClient.send(JSON.stringify({ action: "TOKEN_NOT_VALID", data: 'Вы не аутентифицированы, пожалуйста перезагрузите страницу. ' }));
                     }
                     break;
                 }
@@ -137,7 +141,8 @@ async function onConnect(wsClient) {
                     console.log(jsonMessage.data);
 
                     if (jsonMessage.hash === 'undefined' || (!existHashUsers(jsonMessage.hash) && !existHashGuests(jsonMessage.hash))) {
-                        wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: `You didn't authenticate, please refresh page` }));
+                        //`You didn't authenticate, please refresh page`
+                        wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: 'Вы не аутентифицированы, пожалуйста перезагрузите страницу. ' }));
                         break;
                     }
                     let filename;
@@ -171,9 +176,12 @@ async function onConnect(wsClient) {
                             console.log(`stderr: ${stderr}`);
                         }
                         if (!error) {
-                            processQueue.push('mono');
                             processQueue.push([`./user_data/${jsonMessage.hash}/${filename}.exe`]);
-                            /*let stdData = 'Answer: ';
+                            processQueue.push(jsonMessage);
+                            processQueue.push(wsClient);
+                            processQueue.push(filename);
+                            /*
+                            let stdData = 'Answer: ';
                             let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`]);
                             child.stdin.setDefaultEncoding('utf-8');
                             child.stdin.write(jsonMessage.stdin + '\r\n');
@@ -199,7 +207,8 @@ async function onConnect(wsClient) {
                                 wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
                                 console.log('send data: ', stdData)
                                 saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
-                            });*/
+                            });
+                            */
 
 
                             /*exec(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
@@ -230,13 +239,17 @@ async function onConnect(wsClient) {
     });
 }
 var processQueue = [];
-async function spawnProcessQueue() {
+async function spawnProcessQueue() { //на какой клиент будет отсылаться результат?
     setInterval(() => {
         console.log('freemem: ' + os.freemem);
         if (os.freemem > 134217728) {
             if (processQueue[0] && processQueue[1]) {
+                let args = processQueue.shift();
+                let jsonMessage = processQueue.shift();
+                let wsClient = processQueue.shift();
+                let filename = processQueue.shift();
                 let stdData = '';
-                let child = spawn(processQueue.shift(), processQueue.shift());
+                let child = spawn('mono', args);
                 child.stdin.setDefaultEncoding('utf-8');
                 child.stdin.write(jsonMessage.stdin + '\r\n');
                 child.stdout.on('data', (data) => {
@@ -247,7 +260,7 @@ async function spawnProcessQueue() {
                 child.stderr.on('data', (error) => {
                     console.log('child error: ' + error)
                 });
-                child.on(error, (error) => {
+                child.on('error', (error) => {
                     console.log('CHild process error: ' + error)
                 });
                 child.on('close', (code) => {

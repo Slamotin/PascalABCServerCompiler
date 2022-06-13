@@ -68,13 +68,21 @@ let startTime = Date.now();
 let client1 = [];
 
 let start = async function () {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 100; i++) {
         await myFunc(i);
 	await timers.setTimeout(10);
     }
+    setTimeout(() => { }, 2000);
+    for (let i = 100; i < 200; i++) {
+        await myFunc(i);
+        await timers.setTimeout(10);
+    }
 }
+let i = 0;
+setInterval(() => { myFunc(i); i++; }, 300)
+//start()
 
-start()
+
 // Подключаемся к нужному ресурсу
 /*for (let i = 0; i < 1000; i++) {
     (async () => {
