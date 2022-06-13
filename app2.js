@@ -138,7 +138,11 @@ async function onConnect(wsClient) {
                 case 'COMPILE_CODE': {
                     //let data = new String(jsonMessage.data);
                     //console.log(data.toString());
-                    console.log(jsonMessage.data);
+                    console.log(jsonMessage.data.action);
+                    console.log(jsonMessage.data.data);
+                    console.log(jsonMessage.data.hash);
+                    console.log(jsonMessage.data.filename);
+                    console.log(jsonMessage.data.stdin);
 
                     if (jsonMessage.hash === 'undefined' || (!existHashUsers(jsonMessage.hash) && !existHashGuests(jsonMessage.hash))) {
                         //`You didn't authenticate, please refresh page`
@@ -181,7 +185,7 @@ async function onConnect(wsClient) {
                             processQueue.push(wsClient);
                             processQueue.push(filename);*/
                             
-                            let stdData = 'Answer: ';
+                            let stdData = '';
                             let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`]);
                             child.stdin.setDefaultEncoding('utf-8');
                             child.stdin.write(jsonMessage.stdin + '\r\n');
@@ -193,6 +197,7 @@ async function onConnect(wsClient) {
                             });
                             child.stderr.on('data', (error) => {
                                 console.log('child error: ' + error)
+                                wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: error }));
                             });
                             child.on(error, (error) => {
                                 console.log('CHild process error: ' + error)
