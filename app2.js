@@ -176,11 +176,11 @@ async function onConnect(wsClient) {
                             console.log(`stderr: ${stderr}`);
                         }
                         if (!error) {
-                            processQueue.push([`./user_data/${jsonMessage.hash}/${filename}.exe`]);
+                            /*processQueue.push([`./user_data/${jsonMessage.hash}/${filename}.exe`]);
                             processQueue.push(jsonMessage);
                             processQueue.push(wsClient);
-                            processQueue.push(filename);
-                            /*
+                            processQueue.push(filename);*/
+                            
                             let stdData = 'Answer: ';
                             let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`]);
                             child.stdin.setDefaultEncoding('utf-8');
@@ -208,8 +208,6 @@ async function onConnect(wsClient) {
                                 console.log('send data: ', stdData)
                                 saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
                             });
-                            */
-
 
                             /*exec(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
                                 if (error) {
@@ -238,10 +236,9 @@ async function onConnect(wsClient) {
         console.log('Пользователь отключился');
     });
 }
-var processQueue = [];
+/*var processQueue = [];
 async function spawnProcessQueue() { //на какой клиент будет отсылаться результат?
     setInterval(() => {
-        console.log('freemem: ' + os.freemem);
         if (os.freemem > 134217728) {
             if (processQueue[0] && processQueue[1]) {
                 let args = processQueue.shift();
@@ -276,8 +273,8 @@ async function spawnProcessQueue() { //на какой клиент будет �
                 });
             }
         };
-    }, 500);
-};
+    }, 1000);
+};*/
 
 
 function get_hash(login, password) {
@@ -365,7 +362,7 @@ const takeMemoryLimit = () => {
 setInterval(report, 30000);
 report();
 var memoryLimit = takeMemoryLimit();
-spawnProcessQueue();
+//spawnProcessQueue();
 
 /*function readJson(jsonPath) {
     const { readFile } = require('fs');
