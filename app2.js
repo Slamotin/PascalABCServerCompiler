@@ -218,7 +218,7 @@ async function onConnect(wsClient) {
                             let timeout = setTimeout(() => {
                                 console.log('Timeout by user: ' + jsonMessage.hash)
                                 try {
-                                    process.kill(-child.pid, 'SIGKILL');
+                                    process.kill(-child.pid, 'SIGINT');
                                 } catch (e) {
                                     console.log('Cannot kill process: ' + e);
                                 }
