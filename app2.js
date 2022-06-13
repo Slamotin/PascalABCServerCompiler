@@ -186,7 +186,7 @@ async function onConnect(wsClient) {
                             processQueue.push(filename);*/
                             
                             let stdData = '';
-                            let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`]);
+                            let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000 });
                             child.stdin.setDefaultEncoding('utf-8');
                             child.stdin.write(jsonMessage.stdin + '\r\n');
                             child.stdout.on('data', (data) => {
@@ -198,9 +198,6 @@ async function onConnect(wsClient) {
                             child.stderr.on('data', (error) => {
                                 console.log('child error: ' + error)
                                 wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: error.toString() }));
-                            });
-                            child.on(error, (error) => {
-                                console.log('CHild process error: ' + error)
                             });
                             child.on('close', (code) => {
                                 child.stdin.end();
@@ -215,7 +212,7 @@ async function onConnect(wsClient) {
                                 saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
                             });
 
-                            let timeout = setTimeout(() => {
+                            /*let timeout = setTimeout(() => {
                                 console.log('Timeout by user: ' + jsonMessage.hash)
                                 try {
                                     console.log('Try kill by pid: ' + child.pid + ' ' + -child.pid);
@@ -223,7 +220,7 @@ async function onConnect(wsClient) {
                                 } catch (e) {
                                     console.log('Cannot kill process: ' + e);
                                 }
-                            }, 10000);
+                            }, 10000);*/
 
                             /*exec(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
                                 if (error) {
