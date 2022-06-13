@@ -209,10 +209,20 @@ async function onConnect(wsClient) {
                                 if (code !== 0) {
                                     console.log(`grep process exited with code ${code}`);
                                 }
+                                clearTimeout(timeout);
                                 wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
                                 console.log('send data: ', stdData)
                                 saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
                             });
+
+                            let timeout = setTimeout(() => {
+                                console.log('Timeout by user: ' + jsonMessage.hash)
+                                try {
+                                    process.kill(-child.pid, 'SIGKILL');
+                                } catch (e) {
+                                    console.log('Cannot kill process: ' + e);
+                                }
+                            }, 10000);
 
                             /*exec(`mono ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
                                 if (error) {
