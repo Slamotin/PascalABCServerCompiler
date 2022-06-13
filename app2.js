@@ -197,7 +197,7 @@ async function onConnect(wsClient) {
                             });
                             child.stderr.on('data', (error) => {
                                 console.log('child error: ' + error)
-                                wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: error }));
+                                wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: error.toString() }));
                             });
                             child.on(error, (error) => {
                                 console.log('CHild process error: ' + error)
