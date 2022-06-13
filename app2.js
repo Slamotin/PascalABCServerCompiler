@@ -38,7 +38,7 @@ async function onConnect(wsClient) {
                 jsonMessage = message;
             }
 
-            console.log(jsonMessage);//log parsed message
+            //console.log(jsonMessage);//log parsed message
             switch (jsonMessage.action) {
                 case 'ECHO': {
                     wsClient.send(jsonMessage.data);
@@ -136,13 +136,13 @@ async function onConnect(wsClient) {
                     break;
                 }
                 case 'COMPILE_CODE': {
-                    //let data = new String(jsonMessage.data);
+                    let jsnmData = new String(jsonMessage.data);
                     //console.log(data.toString());
-                    console.log(jsonMessage.data.action);
-                    console.log(jsonMessage.data.data);
-                    console.log(jsonMessage.data.hash);
-                    console.log(jsonMessage.data.filename);
-                    console.log(jsonMessage.data.stdin);
+                    console.log(jsnmData.action);
+                    console.log(jsnmData.data);
+                    console.log(jsnmData.hash);
+                    console.log(jsnmData.filename);
+                    console.log(jsnmData.stdin);
 
                     if (jsonMessage.hash === 'undefined' || (!existHashUsers(jsonMessage.hash) && !existHashGuests(jsonMessage.hash))) {
                         //`You didn't authenticate, please refresh page`
