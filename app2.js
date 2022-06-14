@@ -155,6 +155,7 @@ async function onConnect(wsClient) {
                         filename = rowcount.rowCount;
                     } else {
                         filename = jsonMessage.filename;
+                        filename = filename.split('.')[0];
                     }
                     console.log('filename: ' + filename + ' filenameJson: ' + jsonMessage.filename)
 
@@ -174,7 +175,8 @@ async function onConnect(wsClient) {
                         if (error) {
                             console.log(`error: ${error.message}`);
                             console.log(`stdout: ${stdout}`);
-                            wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdout.slice(341) }));
+                            let splitedError = stdout.split('\n');
+                            wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: splitedError[9] })); //stdout.slice(341)
                         }
                         if (stderr) {
                             console.log(`stderr: ${stderr}`);
