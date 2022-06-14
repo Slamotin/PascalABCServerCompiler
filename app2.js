@@ -208,7 +208,6 @@ async function onConnect(wsClient) {
                                 if (code !== 0) {
                                     console.log(`grep process exited with code ${code}`);
                                 }
-                                clearTimeout(timeout);
                                 wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
                                 console.log('send data: ', stdData)
                                 saveFile(jsonMessage.hash, filename, jsonMessage.data, jsonMessage.raw_string);
