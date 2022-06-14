@@ -174,7 +174,7 @@ async function onConnect(wsClient) {
                         if (error) {
                             console.log(`error: ${error.message}`);
                             console.log(`stdout: ${stdout}`);
-                            wsClient.send({ action: "COMPILER_ANSWER", data: stdout.slice(341) });
+                            wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdout.slice(341) }));
                         }
                         if (stderr) {
                             console.log(`stderr: ${stderr}`);
