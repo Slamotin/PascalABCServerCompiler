@@ -73,7 +73,7 @@ async function onConnect(wsClient) {
                         let res = await db.query('SELECT nickname FROM users WHERE passhash = $1', [jsonMessage.hash]);
                         wsClient.send(JSON.stringify({
                             action: "AUTH_OK"
-                            , nickname: res.rows[0]
+                            , nickname: res.rows[0].nickname
                             , files: JSON.stringify(await getAllFiles(jsonMessage.hash))
                         })); //we can use the same function AUTH_OK
                     } else {
