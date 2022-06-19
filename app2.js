@@ -115,7 +115,12 @@ async function onConnect(wsClient) {
                     if (await existHashUsers(jsonMessage.hash)) {
                         //give all files, give another tabs
                         let res = await db.query('SELECT nickname FROM users WHERE passhash = $1', [jsonMessage.hash])
-                        wsClient.send(JSON.stringify({ action: "AUTH_OK", nickname: res.rows[0], files: JSON.stringify(await getAllFiles(jsonMessage.hash)) }))
+                        wsClient.send(JSON.stringify({
+                            action: "AUTH_OK"
+                            , nickname: res.rows[0]
+                            , files: JSON.stringify(await getAllFiles(jsonMessage.hash))
+                            , lessons: getLessons()
+                        }))
                     } else if (await existHashGuests(jsonMessage.hash)) {
                         //console.log('getAllFiles: ' + gAF + '\n' + gAF.rows[0])
                         wsClient.send(JSON.stringify({ action: "GUEST_AUTH_OK", files: JSON.stringify(await getAllFiles(jsonMessage.hash)) }))
@@ -357,6 +362,11 @@ async function deleteFile(filename, hash) {
 async function signupUser(login, hash, privileges) {
     let query_text = 'insert into users (passhash, nickname, privileges) values ($1, $2, $3)';
     return await db.query(query_text, [hash, login, privileges]);
+}
+
+async function getLessons() {
+    let query_text = 'SELECT * FROM lessons';
+    return await db.query(query_text);
 }
 
 const report = () => {
