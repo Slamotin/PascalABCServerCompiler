@@ -119,7 +119,7 @@ async function onConnect(wsClient) {
                             action: "AUTH_OK"
                             , nickname: res.rows[0]
                             , files: JSON.stringify(await getAllFiles(jsonMessage.hash))
-                            , lessons: getLessons()
+                            , lessons: JSON.stringify(await getLessons())
                         }))
                     } else if (await existHashGuests(jsonMessage.hash)) {
                         //console.log('getAllFiles: ' + gAF + '\n' + gAF.rows[0])
