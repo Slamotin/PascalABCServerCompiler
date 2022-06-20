@@ -18,13 +18,13 @@ async function qwerty() {
 };
 async function ss() {
     let asdfg = await qwerty();
-     //asdfg.rows[0].testdata['1']
+    //asdfg.rows[0].testdata['1']
     setTimeout(() => {
         for (var i in asdfg.rows[0].testdata) {
-            console.log('qwerty: ' + typeof(asdfg.rows[0].testdata[i]));
+            console.log('qwerty: ' + typeof (asdfg.rows[0].testdata[i]));
         }
     }, 3000)
-    
+
 }
 ss();
 
@@ -206,7 +206,7 @@ async function onConnect(wsClient) {
                             processQueue.push(jsonMessage);
                             processQueue.push(wsClient);
                             processQueue.push(filename);*/
-                            
+
                             let stdData = '';
                             let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000 });
                             child.stdin.setDefaultEncoding('utf-8');
@@ -344,7 +344,9 @@ async function onConnect(wsClient) {
                                     //saveFile(jsonMessage.hash, filename + '.pas', jsonMessage.data, jsonMessage.raw_string);
                                 });*/
 
-                            } //end for
+                            }//end for
+                        }//end if (!error)
+                    } //end exec
                 }//end case: 'CHECK_TASK'
             }//end switch
         } catch (error) {
