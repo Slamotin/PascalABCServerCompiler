@@ -306,16 +306,18 @@ async function onConnect(wsClient) {
                             for (let iter in task.rows[0].testdata) {
                                 console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]));
                                 let stdData = '';
-                                let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter });
+                                let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: parseInt(iter) });
                                 if (child.stdout == task.rows[0].testdata[iter]) {
                                     console.log('task #%d completed', checkNumber)
                                 } else {
-                                    console.log('task #%d uncompleted', checkNumber);
+                                    console.log('task #%d uncompleted %d != %d', checkNumber, child.stdout, task.rows[0].testdata[iter]);
                                     wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
                                     break;
                                 }
+                            }
+                            if (checkNumber === 3) {
                                 wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
-                            }//end for
+                            }
                         }//end if (!error) 
                     }); //end exec
                 }//end case: 'CHECK_TASK'
