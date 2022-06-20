@@ -290,7 +290,7 @@ async function onConnect(wsClient) {
                         }
                     });
 
-                    exec(`mono ${pabcexePath} ./user_data/${jsonMessage.hash}/${filename}.pas ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
+                    exec(`mono ${pabcexePath} ./user_data/${jsonMessage.hash}/${filename}.pas ./user_data/${jsonMessage.hash}/${filename}.exe`, async (error, stdout, stderr) => {
                         if (error) {
                             console.log(`error: ${error.message}`);
                             console.log(`stdout: ${stdout}`);
