@@ -346,7 +346,7 @@ async function onConnect(wsClient) {
 
                             }//end for
                         }//end if (!error)
-                    } //end exec
+                    }); //end exec
                 }//end case: 'CHECK_TASK'
             }//end switch
         } catch (error) {
