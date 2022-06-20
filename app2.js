@@ -3,7 +3,7 @@ const port = process.env.PORT || 8080;
 let pabcexePath = "/opt/pabcnetc/pabcnetc.exe";
 
 const db = require('./database.js') || require('database.js');
-const { exec, spawn } = require("child_process");
+const { exec, spawn, spawnSync } = require("child_process");
 const WebSocket = require('ws');
 const { SHA3 } = require('sha3');
 const os = require('os');
