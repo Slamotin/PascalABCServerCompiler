@@ -259,6 +259,93 @@ async function onConnect(wsClient) {
                     });
                     break;
                 }//end case: 'CODE'
+
+                case 'CHECK_TASK': {
+                    let jsnmData = new String(jsonMessage.data);
+
+                    if (jsonMessage.hash === 'undefined' || (!existHashUsers(jsonMessage.hash) && !existHashGuests(jsonMessage.hash))) {
+                        //`You didn't authenticate, please refresh page`
+                        wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: 'Вы не аутентифицированы, пожалуйста перезагрузите страницу. ' }));
+                        break;
+                    }
+                    let filename;
+                    if (jsonMessage.filename == '') {
+                        let rowcount = await getAllFiles(jsonMessage.hash);
+                        filename = rowcount.rowCount;
+                    } else {
+                        filename = jsonMessage.filename;
+                        filename = filename.split('.')[0];
+                    }
+                    console.log('filename: ' + filename + ' filenameJson: ' + jsonMessage.filename)
+
+                    exec(`mkdir -p ./user_data/${jsonMessage.hash} && echo "${jsonMessage.data.toString()}" > ./user_data/${jsonMessage.hash}/${filename}.pas`, (error, stdout, stderr) => {
+                        if (error) {
+                            console.log(`error: ${error.message}`);
+                        }
+                        if (stderr) {
+                            console.log(`stderr: ${stderr}`);
+                        }
+                        if (stdout) {
+                            console.log(`stdout: ${stdout}`);
+                        }
+                    });
+
+                    exec(`mono ${pabcexePath} ./user_data/${jsonMessage.hash}/${filename}.pas ./user_data/${jsonMessage.hash}/${filename}.exe`, (error, stdout, stderr) => {
+                        if (error) {
+                            console.log(`error: ${error.message}`);
+                            console.log(`stdout: ${stdout}`);
+                            let splitedError = stdout.split('\n');
+                            wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: splitedError[9] })); //stdout.slice(341)
+                        }
+                        if (stderr) {
+                            console.log(`stderr: ${stderr}`);
+                        }
+                        if (!error) {
+                            let task = await getOneTask(input_message.task_id);
+                            let checkNumber = 0;
+                            for (let iter in task.rows[0].testdata) {
+                                console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]));
+                                let stdData = '';
+                                let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter });
+                                if (child.stdout == task.rows[0].testdata[iter]) {
+                                    console.log('task #%d completed', checkNumber)
+                                } else {
+                                    console.log('task #%d uncompleted', checkNumber);
+                                    wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
+                                    break;
+                                }
+                                wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
+                                /*child.stdin.setDefaultEncoding('utf-8');
+                                child.stdin.write(iter);
+                                child.stdout.on('data', (data) => {
+                                    console.log(`stdout: ${data}`);
+                                    stdData += data;
+                                    //pidusage(child.pid, function (err, stats) { console.log(stats); });
+                                    //console.log(child.memoryUsage())
+                                });
+                                child.stderr.on('data', (error) => {
+                                    console.log('child error: ' + error)
+                                    wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: error.toString() }));
+                                });
+                                child.on('close', (code) => {
+                                    child.stdin.end();
+                                    child.stdout.end();
+                                    child.stderr.end();
+                                    if (code !== 0) {
+                                        console.log(`grep process exited with code ${code}`);
+                                    }
+                                    if (stdData == task.rows[0].testdata[iter]) {
+                                        console.log('task completed')
+                                    } else {
+                                        console.log('task uncompleted')
+                                    }
+                                    //wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
+                                    //console.log('send data: ', stdData)
+                                    //saveFile(jsonMessage.hash, filename + '.pas', jsonMessage.data, jsonMessage.raw_string);
+                                });*/
+
+                            } //end for
+                }//end case: 'CHECK_TASK'
             }//end switch
         } catch (error) {
             console.log('Ошибка: ', error);
@@ -387,6 +474,11 @@ async function getLessons() {
 async function getTasks() {
     let query_text = 'SELECT * FROM tasks';
     return await db.query(query_text);
+}
+
+async function getOneTask(task_id) {
+    let query_text = 'SELECT * FROM tasks WHERE task_id = $1';
+    return await db.query(query_text, [task_id]);
 }
 
 const report = () => {
