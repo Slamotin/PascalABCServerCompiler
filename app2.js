@@ -315,35 +315,6 @@ async function onConnect(wsClient) {
                                     break;
                                 }
                                 wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
-                                /*child.stdin.setDefaultEncoding('utf-8');
-                                child.stdin.write(iter);
-                                child.stdout.on('data', (data) => {
-                                    console.log(`stdout: ${data}`);
-                                    stdData += data;
-                                    //pidusage(child.pid, function (err, stats) { console.log(stats); });
-                                    //console.log(child.memoryUsage())
-                                });
-                                child.stderr.on('data', (error) => {
-                                    console.log('child error: ' + error)
-                                    wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: error.toString() }));
-                                });
-                                child.on('close', (code) => {
-                                    child.stdin.end();
-                                    child.stdout.end();
-                                    child.stderr.end();
-                                    if (code !== 0) {
-                                        console.log(`grep process exited with code ${code}`);
-                                    }
-                                    if (stdData == task.rows[0].testdata[iter]) {
-                                        console.log('task completed')
-                                    } else {
-                                        console.log('task uncompleted')
-                                    }
-                                    //wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: stdData }));
-                                    //console.log('send data: ', stdData)
-                                    //saveFile(jsonMessage.hash, filename + '.pas', jsonMessage.data, jsonMessage.raw_string);
-                                });*/
-
                             }//end for
                         }//end if (!error)
                     }); //end exec
