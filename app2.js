@@ -9,10 +9,24 @@ const { SHA3 } = require('sha3');
 const os = require('os');
 //const { Hash } = require('crypto');
 
-const pidusage = require('pidusage');
+//const pidusage = require('pidusage');
 
 const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*", perMessageDeflate: false });
 
+async function qwerty() {
+    return await db.query('SELECT * FROM tasks WHERE task_id = $1', [104]);
+};
+async function ss() {
+    let asdfg = await qwerty();
+     //asdfg.rows[0].testdata['1']
+    setTimeout(() => {
+        for (var i in asdfg.rows[0].testdata) {
+            console.log('qwerty: ' + typeof(asdfg.rows[0].testdata[i]));
+        }
+    }, 3000)
+    
+}
+ss();
 
 wsServer.on('connection', function connection(ws, req) {
     const ip = req.connection.remoteAddress.split(":").pop();//headers['x-forwarded-for'];
@@ -120,6 +134,7 @@ async function onConnect(wsClient) {
                             , nickname: res.rows[0]
                             , files: JSON.stringify(await getAllFiles(jsonMessage.hash))
                             , lessons: JSON.stringify(await getLessons())
+                            , tasks: getTasks()
                         }))
                     } else if (await existHashGuests(jsonMessage.hash)) {
                         //console.log('getAllFiles: ' + gAF + '\n' + gAF.rows[0])
@@ -366,6 +381,11 @@ async function signupUser(login, hash, privileges) {
 
 async function getLessons() {
     let query_text = 'SELECT * FROM lessons';
+    return await db.query(query_text);
+}
+
+async function getTasks() {
+    let query_text = 'SELECT * FROM tasks';
     return await db.query(query_text);
 }
 
