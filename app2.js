@@ -134,7 +134,7 @@ async function onConnect(wsClient) {
                             , nickname: res.rows[0]
                             , files: JSON.stringify(await getAllFiles(jsonMessage.hash))
                             , lessons: JSON.stringify(await getLessons())
-                            , tasks: getTasks()
+                            , tasks: JSON.stringify(await getTasks())
                         }))
                     } else if (await existHashGuests(jsonMessage.hash)) {
                         //console.log('getAllFiles: ' + gAF + '\n' + gAF.rows[0])
