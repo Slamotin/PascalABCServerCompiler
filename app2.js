@@ -316,7 +316,7 @@ async function onConnect(wsClient) {
                                 }
                                 wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
                             }//end for
-                        }//end if (!error)
+                        }//end if (!error) 
                     }); //end exec
                 }//end case: 'CHECK_TASK'
             }//end switch
