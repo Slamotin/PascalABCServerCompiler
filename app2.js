@@ -301,7 +301,7 @@ async function onConnect(wsClient) {
                             console.log(`stderr: ${stderr}`);
                         }
                         if (!error) {
-                            let task = await getOneTask(input_message.task_id);
+                            let task = await getOneTask(jsonMessage.task_id);
                             let checkNumber = 0;
                             for (let iter in task.rows[0].testdata) {
                                 console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]));
