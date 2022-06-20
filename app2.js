@@ -308,6 +308,7 @@ async function onConnect(wsClient) {
                                 let child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter });
                                 if (child.stdout == task.rows[0].testdata[iter]) {
                                     console.log('task #%d completed', checkNumber)
+                                    checkNumber++;
                                 } else {
                                     console.log('task #%d uncompleted %d != %d with %d', checkNumber, child.stdout, task.rows[0].testdata[iter], iter);
                                     wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
