@@ -297,6 +297,7 @@ async function onConnect(wsClient) {
                                 let child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter });
                                 let stdoutput = child.stdout;
                                 stdoutput = stdoutput.toString('utf-8');
+                                console.log('all output ' + child.output)
                                 if (stdoutput == task.rows[0].testdata[iter]) {
                                     console.log('task #%d completed', checkNumber)
                                     checkNumber++;
