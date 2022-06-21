@@ -293,16 +293,12 @@ async function onConnect(wsClient) {
                             let checkNumber = 0;
                             for (let iter in task.rows[0].testdata) {
                                 console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]) + task.rows[0].testdata[iter] + ' ' + iter);
-                                let stdData = '';
-                                console.log(iter);
                                 let child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter });
-                                console.log(iter);
                                 if (child.stdout == task.rows[0].testdata[iter]) {
-                                    console.log(iter);
                                     console.log('task #%d completed', checkNumber)
                                     checkNumber++;
                                 } else {
-                                    console.log(iter);
+                                    console.log('stdout type: ', + typeof (child.stdout))
                                     console.log(`task #${checkNumber} uncompleted ${child.stdout} != ${task.rows[0].testdata[iter]} with ${iter}`);
                                     wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
                                     break;
