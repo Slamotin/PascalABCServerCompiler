@@ -298,7 +298,7 @@ async function onConnect(wsClient) {
                                 let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000 });
                                 child.stdin.setDefaultEncoding('utf-8');
                                 child.stdin.write(iter);
-                                child.stdout.on('data', (data) => {
+                                child.stdout.once('data', (data) => {
                                     console.log(`stdout: ${data}`);
                                     stdData += data;
                                     //pidusage(child.pid, function (err, stats) { console.log(stats); });
