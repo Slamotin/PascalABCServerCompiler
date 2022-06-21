@@ -306,7 +306,7 @@ async function onConnect(wsClient) {
                                 });
                                 child.stderr.on('data', (error) => {
                                     console.log('child error: ' + error)
-                                    wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: error.toString() }));
+                                    wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: error.toString() }));
                                 });
                                 child.on('close', (code) => {
                                     child.stdin.end();
