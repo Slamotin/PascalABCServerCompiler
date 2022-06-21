@@ -294,7 +294,7 @@ async function onConnect(wsClient) {
                             let checkNumber = 0;
                             let length = task.rows[0].testdata.length;
                             for (let iter in task.rows[0].testdata) {
-                                let stdData = '';
+                                /*let stdData = '';
                                 let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000 });
                                 child.stdin.setDefaultEncoding('utf-8');
                                 child.stdin.write(iter);
@@ -329,11 +329,9 @@ async function onConnect(wsClient) {
                                     }
                                 });
 
-                                if (checkNumber === 3) {
-                                    wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
-                                }
-                                /*console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]) + task.rows[0].testdata[iter] + ' ' + iter);
-                                let child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter });
+                                */
+                                console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]) + task.rows[0].testdata[iter] + ' ' + iter);
+                                let child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter, encoding: 'utf-8' });
                                 let stdoutput = child.stdout;
                                 stdoutput = stdoutput.toString('utf-8');
                                 console.log('all output ' + child.output)
@@ -345,7 +343,10 @@ async function onConnect(wsClient) {
                                     console.log(`task #${checkNumber} uncompleted ${stdoutput} != ${task.rows[0].testdata[iter]} with ${iter}`);
                                     wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
                                     break;
-                                }*/
+                                }
+                            }
+                            if (checkNumber === 3) {
+                                wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
                             }
                             
                         }//end if (!error) 
