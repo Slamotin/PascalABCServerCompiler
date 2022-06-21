@@ -404,7 +404,7 @@ async function spawnTask(iter, task, jsonMessage, filename) {
         wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
         //break;
     };*/
-    JSON.parse(child.output[1].toLowerCase()) == task.rows[0].testdata[iter] ? console.log('True') : console.log("false");
+    JSON.parse(child.output[1].toLowerCase()) == JSON.parse(task.rows[0].testdata[iter].toLowerCase()) ? console.log('True') : console.log("false");
     console.log(`task #{checkNumber} uncompleted ${stdoutput} != ${task.rows[0].testdata[iter]} with ${iter}`);
 
     console.log('stdout type: ' + typeof (stdoutput) + ' output: ' + child.output[1] +  'isbuffer? ' + isBuffer(stdoutput) + 'isNaN ' + isNaN(stdoutput))
