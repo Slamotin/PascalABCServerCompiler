@@ -5,27 +5,12 @@ const db = require('./database.js') || require('database.js');
 const { exec, spawn, spawnSync } = require("child_process");
 const WebSocket = require('ws');
 const { SHA3 } = require('sha3');
-const os = require('os');
+
 //const { Hash } = require('crypto');
 
 //const pidusage = require('pidusage');
 
 const wsServer = new WebSocket.Server({ port: port, 'Access-Control-Allow-Origin': "*", perMessageDeflate: false });
-
-async function qwerty() {
-    return await db.query('SELECT * FROM tasks WHERE task_id = $1', [104]);
-};
-async function ss() {
-    let asdfg = await qwerty();
-    //asdfg.rows[0].testdata['1']
-    setTimeout(() => {
-        for (var i in asdfg.rows[0].testdata) {
-            console.log('qwerty: ' + typeof (asdfg.rows[0].testdata[i]));
-        }
-    }, 3000)
-
-}
-ss();
 
 wsServer.on('connection', function connection(ws, req) {
     const ip = req.connection.remoteAddress.split(":").pop();//headers['x-forwarded-for'];
@@ -85,10 +70,9 @@ async function onConnect(wsClient) {
                     if (await existHashGuests(jsonMessage.hash) || await existHashUsers(jsonMessage.hash)) {
                         let res = await db.query('SELECT nickname FROM users WHERE passhash = $1', [jsonMessage.hash]);
                         wsClient.send(JSON.stringify({
-                            action: "AUTH_OK"
-                            , nickname: res.rows[0].nickname
+                            action: "TAKE_ALL_FILES"
                             , files: JSON.stringify(await getAllFiles(jsonMessage.hash))
-                        })); //we can use the same function AUTH_OK
+                        }));
                     } else {
                         //`You didn't authenticate, please refresh page`
                         wsClient.send(JSON.stringify({ action: "TOKEN_NOT_VALID", data: 'Вы не аутентифицированы, пожалуйста перезагрузите страницу. ' }));
@@ -137,7 +121,12 @@ async function onConnect(wsClient) {
                         }))
                     } else if (await existHashGuests(jsonMessage.hash)) {
                         //console.log('getAllFiles: ' + gAF + '\n' + gAF.rows[0])
-                        wsClient.send(JSON.stringify({ action: "GUEST_AUTH_OK", files: JSON.stringify(await getAllFiles(jsonMessage.hash)) }))
+                        wsClient.send(JSON.stringify({
+                            action: "GUEST_AUTH_OK"
+                            , files: JSON.stringify(await getAllFiles(jsonMessage.hash))
+                            , lessons: JSON.stringify(await getLessons())
+                            , tasks: JSON.stringify(await getTasks())
+                        }))
                     } else {
                         //`You didn't authenticate, please refresh page`
                         wsClient.send(JSON.stringify({ action: "TOKEN_NOT_VALID", data: 'Вы не аутентифицированы, пожалуйста перезагрузите страницу. ' }));
