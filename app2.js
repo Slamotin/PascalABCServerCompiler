@@ -332,7 +332,7 @@ async function onConnect(wsClient) {
                                 */
                                 console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]) + task.rows[0].testdata[iter] + ' ' + iter);
                                 let child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter, encoding: 'utf8' });
-                                let stdoutput = new String(child.stdout);
+                                let stdoutput = child.output[1];
                                 //stdoutput = stdoutput.toString('utf-8');
                                 console.log('all output ' + child.output + ' blya ' + child.output[1] + typeof (child.output[1]) + ' ' + typeof(child) + ' ' + child)
                                 if (stdoutput == task.rows[0].testdata[iter]) {
