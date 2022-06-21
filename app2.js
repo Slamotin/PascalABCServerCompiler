@@ -296,6 +296,7 @@ async function onConnect(wsClient) {
                             var child;
                             var stdoutput;
                             for (var iter in task.rows[0].testdata) {
+                                await spawnTask(task);
                                 /*let stdData = '';
                                 let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000 });
                                 child.stdin.setDefaultEncoding('utf-8');
@@ -332,28 +333,7 @@ async function onConnect(wsClient) {
                                 });
 
                                 */
-                                console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]) + task.rows[0].testdata[iter] + ' ' + iter);
-                                child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter, encoding: 'utf8' });
-                                stdoutput = child.output[1];
-                                //stdoutput = stdoutput.toString('utf-8');
-                                console.log('all output ' + child.output + ' blya ' + child.output[1] + typeof (child.output[1]) + typeof (stdoutput) + ' ' + typeof (child) + ' ' + child)
-                                /*if (stdoutput == task.rows[0].testdata[iter]) {
-                                    console.log('task #%d completed', checkNumber)
-                                    checkNumber++;
-                                } else {
-                                    console.log('stdout type: ', + typeof (stdoutput), 'isbuffer? ' + isBuffer(stdoutput) + 'isNaN ' + isNaN(stdoutput))
-                                    console.log(`task #${checkNumber} uncompleted ${stdoutput} != ${task.rows[0].testdata[iter]} with ${iter}`);
-                                    wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
-                                    //break;
-                                };*/
-                                //stdoutput == task.rows[0].testdata[iter] ? console.log('True') : console.log("false");
-                                
-
-                                console.log('stdout type: ', + typeof (stdoutput), 'isbuffer? ' + isBuffer(stdoutput) + 'isNaN ' + isNaN(stdoutput))
-                            }
-                            if (checkNumber === length) {
-                                wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
-                            }
+                               
                             
                         }//end if (!error) 
                     }); //end exec
@@ -409,6 +389,30 @@ async function spawnProcessQueue() { //на какой клиент будет �
     }, 1000);
 };*/
 
+async function spawnTask(task) {
+    console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]) + task.rows[0].testdata[iter] + ' ' + iter);
+    var child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter, encoding: 'utf8' });
+    var stdoutput = child.output[1];
+    //stdoutput = stdoutput.toString('utf-8');
+    console.log('all output ' + child.output + ' blya ' + child.output[1] + typeof (child.output[1]) + typeof (stdoutput) + ' ' + typeof (child) + ' ' + child)
+    /*if (stdoutput == task.rows[0].testdata[iter]) {
+        console.log('task #%d completed', checkNumber)
+        checkNumber++;
+    } else {
+        console.log('stdout type: ', + typeof (stdoutput), 'isbuffer? ' + isBuffer(stdoutput) + 'isNaN ' + isNaN(stdoutput))
+        console.log(`task #${checkNumber} uncompleted ${stdoutput} != ${task.rows[0].testdata[iter]} with ${iter}`);
+        wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
+        //break;
+    };*/
+    //stdoutput == task.rows[0].testdata[iter] ? console.log('True') : console.log("false");
+
+
+    console.log('stdout type: ', + typeof (stdoutput), 'isbuffer? ' + isBuffer(stdoutput) + 'isNaN ' + isNaN(stdoutput))
+}
+if (checkNumber === length) {
+    wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
+}
+}
 
 function get_hash(login, password) {
     let hash = new SHA3(256);
