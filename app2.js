@@ -296,7 +296,7 @@ async function onConnect(wsClient) {
                             var child;
                             var stdoutput;
                             for (var iter in task.rows[0].testdata) {
-                                await spawnTask(task);
+                                await spawnTask(iter, task);
                                 /*let stdData = '';
                                 let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000 });
                                 child.stdin.setDefaultEncoding('utf-8');
@@ -389,7 +389,7 @@ async function spawnProcessQueue() { //на какой клиент будет �
     }, 1000);
 };*/
 
-async function spawnTask(task) {
+async function spawnTask(iter, task) {
     console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]) + task.rows[0].testdata[iter] + ' ' + iter);
     var child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter, encoding: 'utf8' });
     var stdoutput = child.output[1];
