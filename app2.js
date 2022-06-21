@@ -342,7 +342,7 @@ async function onConnect(wsClient) {
                                     console.log('stdout type: ', + typeof (stdoutput), 'isbuffer? ' + isBuffer(stdoutput) + 'isNaN ' + isNaN(stdoutput))
                                     console.log(`task #${checkNumber} uncompleted ${stdoutput} != ${task.rows[0].testdata[iter]} with ${iter}`);
                                     wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
-                                    break;
+                                    //break;
                                 }
                             }
                             if (checkNumber === length) {
