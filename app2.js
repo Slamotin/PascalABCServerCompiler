@@ -318,6 +318,7 @@ async function onConnect(wsClient) {
                                     if (stdData == task.rows[0].testdata[iter]) {
                                         console.log('task #%d completed', checkNumber)
                                         checkNumber++;
+
                                         if (checkNumber === length) {
                                             wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
                                         }
