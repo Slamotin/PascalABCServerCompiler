@@ -292,7 +292,7 @@ async function onConnect(wsClient) {
                             let task = await getOneTask(jsonMessage.task_id);
                             let checkNumber = 0;
                             for (let iter in task.rows[0].testdata) {
-                                console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]) + task.rows[0].testdata[iter]);
+                                console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]) + task.rows[0].testdata[iter] + ' ' + iter);
                                 let stdData = '';
                                 let child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter });
                                 if (child.stdout == task.rows[0].testdata[iter]) {
