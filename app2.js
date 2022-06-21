@@ -292,6 +292,7 @@ async function onConnect(wsClient) {
                         if (!error) {
                             let task = await getOneTask(jsonMessage.task_id);
                             let checkNumber = 0;
+                            let length = task.rows[0].testdata.length;
                             for (let iter in task.rows[0].testdata) {
                                 let stdData = '';
                                 let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000 });
@@ -317,7 +318,7 @@ async function onConnect(wsClient) {
                                     if (stdData == task.rows[0].testdata[iter]) {
                                         console.log('task #%d completed', checkNumber)
                                         checkNumber++;
-                                        if (checkNumber === 3) {
+                                        if (checkNumber === length) {
                                             wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
                                         }
                                     } else {
