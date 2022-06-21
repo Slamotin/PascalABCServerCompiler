@@ -290,11 +290,11 @@ async function onConnect(wsClient) {
                             console.log(`stderr: ${stderr}`);
                         }
                         if (!error) {
-                            var task = await getOneTask(jsonMessage.task_id);
+                            /*var task = await getOneTask(jsonMessage.task_id);
                             var checkNumber = 0;
                             var length = task.rows[0].testdata.length;
                             var child;
-                            var stdoutput;
+                            var stdoutput;*/
                             //for (var iter in task.rows[0].testdata) {
                                 //await spawnTask(iter, task, jsonMessage, filename);
                                 /*let stdData = '';
