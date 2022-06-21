@@ -293,7 +293,9 @@ async function onConnect(wsClient) {
                             var task = await getOneTask(jsonMessage.task_id);
                             var checkNumber = 0;
                             var length = task.rows[0].testdata.length;
-                            for (let iter in task.rows[0].testdata) {
+                            var child;
+                            var stdoutput;
+                            for (var iter in task.rows[0].testdata) {
                                 /*let stdData = '';
                                 let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000 });
                                 child.stdin.setDefaultEncoding('utf-8');
@@ -331,8 +333,8 @@ async function onConnect(wsClient) {
 
                                 */
                                 console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]) + task.rows[0].testdata[iter] + ' ' + iter);
-                                var child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter, encoding: 'utf8' });
-                                var stdoutput = child.output[1];
+                                child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter, encoding: 'utf8' });
+                                stdoutput = child.output[1];
                                 //stdoutput = stdoutput.toString('utf-8');
                                 console.log('all output ' + child.output + ' blya ' + child.output[1] + typeof (child.output[1]) + typeof (stdoutput) + ' ' + typeof(child) + ' ' + child)
                                 if (stdoutput == task.rows[0].testdata[iter]) {
