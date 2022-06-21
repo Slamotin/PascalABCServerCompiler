@@ -333,8 +333,8 @@ async function onConnect(wsClient) {
                                 });
 
                                 */
-                               
-                            
+
+                            }
                         }//end if (!error) 
                     }); //end exec
                 }//end case: 'CHECK_TASK'
