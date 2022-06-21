@@ -297,7 +297,7 @@ async function onConnect(wsClient) {
                             var stdoutput;
                             for (var iter in task.rows[0].testdata) {
                                 await spawnTask(iter, task, jsonMessage, filename);
-                                /*let stdData = '';
+                                let stdData = '';
                                 let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000 });
                                 child.stdin.setDefaultEncoding('utf-8');
                                 child.stdin.write(iter);
@@ -332,7 +332,7 @@ async function onConnect(wsClient) {
                                     }
                                 });
 
-                                */
+                                
 
                             }
                         }//end if (!error) 
