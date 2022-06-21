@@ -405,7 +405,7 @@ async function spawnTask(iter, task, jsonMessage, filename) {
         //break;
     };*/
     child.output[1]  == task.rows[0].testdata[iter] ? console.log('True') : console.log("false");
-    console.log(`task #${checkNumber} uncompleted ${stdoutput} != ${task.rows[0].testdata[iter]} with ${iter}`);
+    console.log(`task #{checkNumber} uncompleted ${stdoutput} != ${task.rows[0].testdata[iter]} with ${iter}`);
 
     console.log('stdout type: ' + typeof (stdoutput) + ' output: ' + child.output[1] +  'isbuffer? ' + isBuffer(stdoutput) + 'isNaN ' + isNaN(stdoutput))
     /*if (checkNumber === length) {
