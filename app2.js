@@ -404,15 +404,16 @@ async function spawnTask(task) {
         wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
         //break;
     };*/
-    //stdoutput == task.rows[0].testdata[iter] ? console.log('True') : console.log("false");
+    stdoutput == task.rows[0].testdata[iter] ? console.log('True') : console.log("false");
 
 
     console.log('stdout type: ', + typeof (stdoutput), 'isbuffer? ' + isBuffer(stdoutput) + 'isNaN ' + isNaN(stdoutput))
+    /*if (checkNumber === length) {
+        wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
+    }*/
 }
-if (checkNumber === length) {
-    wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
-}
-}
+
+
 
 function get_hash(login, password) {
     let hash = new SHA3(256);
