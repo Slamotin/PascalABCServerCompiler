@@ -374,6 +374,7 @@ async function onConnect(wsClient) {
                                 if (checkNumber === 3) {
                                     wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
                                 }
+                            }
                         }//end if (!error) 
                     }); //end exec
                 }//end case: 'CHECK_TASK'
