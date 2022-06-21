@@ -303,7 +303,7 @@ async function onConnect(wsClient) {
                                     checkNumber++;
                                 } else {
                                     console.log(iter);
-                                    console.log('task #%d uncompleted %d != %d with %d', checkNumber, child.stdout, task.rows[0].testdata[iter], iter);
+                                    console.log(`task #${checkNumber} uncompleted ${child.stdout} != ${task.rows[0].testdata[iter]} with ${iter}`);
                                     wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
                                     break;
                                 }
