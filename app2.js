@@ -336,8 +336,8 @@ async function onConnect(wsClient) {
                                 child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter, encoding: 'utf8' });
                                 stdoutput = child.output[1];
                                 //stdoutput = stdoutput.toString('utf-8');
-                                console.log('all output ' + child.output + ' blya ' + child.output[1] + typeof (child.output[1]) + typeof (stdoutput) + ' ' + typeof(child) + ' ' + child)
-                                if (stdoutput == task.rows[0].testdata[iter]) {
+                                console.log('all output ' + child.output + ' blya ' + child.output[1] + typeof (child.output[1]) + typeof (stdoutput) + ' ' + typeof (child) + ' ' + child)
+                                /*if (stdoutput == task.rows[0].testdata[iter]) {
                                     console.log('task #%d completed', checkNumber)
                                     checkNumber++;
                                 } else {
@@ -345,7 +345,13 @@ async function onConnect(wsClient) {
                                     console.log(`task #${checkNumber} uncompleted ${stdoutput} != ${task.rows[0].testdata[iter]} with ${iter}`);
                                     wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
                                     //break;
+                                };*/
+                                if (stdoutput == task.rows[0].testdata[iter]) {
+                                    console.log('True');
+                                } else {
+                                    console.log("false");
                                 }
+
                                 console.log('stdout type: ', + typeof (stdoutput), 'isbuffer? ' + isBuffer(stdoutput) + 'isNaN ' + isNaN(stdoutput))
                             }
                             if (checkNumber === length) {
