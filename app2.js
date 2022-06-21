@@ -296,7 +296,7 @@ async function onConnect(wsClient) {
                             var child;
                             var stdoutput;
                             for (var iter in task.rows[0].testdata) {
-                                await spawnTask(iter, task, jsonMessage, filename);
+                                //await spawnTask(iter, task, jsonMessage, filename);
                                 let stdData = '';
                                 let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000 });
                                 child.stdin.setDefaultEncoding('utf-8');
