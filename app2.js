@@ -335,46 +335,25 @@ async function onConnect(wsClient) {
                                 
 
                             //}
+                            let task = await getOneTask(jsonMessage.task_id);
+                            let checkNumber = 0;
                             for (let iter in task.rows[0].testdata) {
+                                console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]));
                                 let stdData = '';
-                                let child = spawn(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000 });
-                                child.stdin.setDefaultEncoding('utf-8');
-                                child.stdin.write(iter);
-                                child.stdout.on('data', (data) => {
-                                    console.log(`stdout: ${data}`);
-                                    stdData += data;
-                                    //pidusage(child.pid, function (err, stats) { console.log(stats); });
-                                    //console.log(child.memoryUsage())
-                                });
-                                child.stderr.on('data', (error) => {
-                                    console.log('child error: ' + error)
-                                    wsClient.send(JSON.stringify({ action: "COMPILER_ANSWER", data: error.toString() }));
-                                });
-                                child.on('close', (code) => {
-                                    child.stdin.end();
-                                    child.stdout.end();
-                                    child.stderr.end();
-                                    if (code !== 0) {
-                                        console.log(`grep process exited with code ${code}`);
-                                    }
-                                    if (stdData == task.rows[0].testdata[iter]) {
-                                        console.log('task #%d completed', checkNumber)
-                                        checkNumber++;
-                                        if (checkNumber === 3) {
-                                            wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
-                                        }
-                                    } else {
-                                        console.log('stdout type: ', + typeof (stdData), 'isbuffer? ' + isBuffer(stdData) + 'isNaN ' + isNaN(stdData))
-                                        console.log(`task #${checkNumber} uncompleted ${stdData} != ${task.rows[0].testdata[iter]} with ${iter}`);
-                                        wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
-                                        //break;
-                                    }
-                                });
-
-                                if (checkNumber === 3) {
-                                    wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
+                                let child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter });
+                                if (child.stdout == task.rows[0].testdata[iter]) {
+                                    console.log('task #%d completed', checkNumber)
+                                    checkNumber++;
+                                } else {
+                                    console.log('task #%d uncompleted %d != %d with %d', checkNumber, child.stdout, task.rows[0].testdata[iter], iter);
+                                    wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
+                                    break;
                                 }
                             }
+                            if (checkNumber === 3) {
+                                wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: 'Все тесты пройдены' }));
+                            }
+                            
                         }//end if (!error) 
                     }); //end exec
                 }//end case: 'CHECK_TASK'
