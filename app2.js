@@ -295,6 +295,7 @@ async function onConnect(wsClient) {
                                 console.log('qwerty: ' + typeof (task.rows[0].testdata[iter]) + task.rows[0].testdata[iter] + ' ' + iter);
                                 let child = spawnSync(`mono`, [`./user_data/${jsonMessage.hash}/${filename}.exe`], { timeout: 10000, input: iter });
                                 let stdoutput = child.stdout;
+                                stdoutput = stdoutput.toString('utf-8');
                                 if (stdoutput == task.rows[0].testdata[iter]) {
                                     console.log('task #%d completed', checkNumber)
                                     checkNumber++;
