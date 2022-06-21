@@ -5,6 +5,7 @@ const db = require('./database.js') || require('database.js');
 const { exec, spawn, spawnSync } = require("child_process");
 const WebSocket = require('ws');
 const { SHA3 } = require('sha3');
+const { isBuffer } = require('util');
 
 //const { Hash } = require('crypto');
 
@@ -300,7 +301,7 @@ async function onConnect(wsClient) {
                                     console.log('task #%d completed', checkNumber)
                                     checkNumber++;
                                 } else {
-                                    console.log('stdout type: ', + typeof (stdoutput))
+                                    console.log('stdout type: ', + typeof (stdoutput), 'isbuffer? ' + isBuffer(stdoutput) + 'isNaN ' + isNaN(stdoutput))
                                     console.log(`task #${checkNumber} uncompleted ${stdoutput} != ${task.rows[0].testdata[iter]} with ${iter}`);
                                     wsClient.send(JSON.stringify({ action: "TASK_COMPLETE_ANSWER", data: `Тест #${checkNumber} не пройден` }));
                                     break;
